@@ -38,9 +38,11 @@ function SuperAdminPharmacies() {
                 <TableHead className="px-6 py-4 text-base">Number</TableHead>
                 <TableHead className="px-6 py-4 text-base">Location</TableHead>
                 <TableHead className="px-6 py-4 text-base">
+                  Admin Add it
+                </TableHead>
+                <TableHead className="px-6 py-4 text-base">
                   Added Date
                 </TableHead>
-
                 <TableHead className="px-6 py-4 text-right text-base">
                   <span className="sr-only">Actions</span>
                 </TableHead>
@@ -61,6 +63,7 @@ function SuperAdminPharmacies() {
                   0992203599
                 </TableCell>
                 <TableCell className="px-6 py-4 text-base">Damascus</TableCell>
+                <TableCell className="px-6 py-4 text-base">Abdo</TableCell>
                 <TableCell className="px-6 py-4 text-base">
                   24-10-2025
                 </TableCell>
