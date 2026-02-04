@@ -1,8 +1,9 @@
 import { createBrowserRouter } from "react-router-dom";
 import { AppLayout } from "./components/AppLayout";
 import SuperAdminAdmins from "./pages/superAdmin/SuperAdminAdmins";
-import SuperAdminCreateAdmin from "./pages/superAdmin/SuperAdminCreateAdmin";
 import SuperAdminHomePage from "./pages/superAdmin/SuperAdminHomePage";
+import SuperAdminPharmacies from "./pages/superAdmin/SuperAdminPharmacies";
+import SuperAdminWarehouses from "./pages/superAdmin/SuperAdminWarehouses";
 
 const router = createBrowserRouter([
   // {
@@ -24,15 +25,18 @@ const router = createBrowserRouter([
       // { path: "/profile", element: <ProfilePage /> },
 
       {
-        // element: <RequireRole allowed={["company"]} />,
+        // element: <RequireRole allowed={["superAdmin"]} />,
         children: [
           { path: "", element: <SuperAdminHomePage /> },
-          // { path: "pharmacies", element: <AdminPharmacies /> },
-          // { path: "pharmacies/create", element: <AdminCreatePharmacie /> },
-          // { path: "warehouses ", element: <AdminWarehouses /> },
-          // { path: "warehouses/create", element: <AdminCreateWarehouse /> },
+          { path: "pharmacies", element: <SuperAdminPharmacies /> },
+          // { path: "pharmacies/create", element: <SuperAdminCreatePharmacy /> },
+          { path: "warehouses", element: <SuperAdminWarehouses /> },
+          // {
+          //   path: "warehouses/create",
+          //   element: <SuperAdminCreateWarehouse />,
+          // },
           { path: "admins", element: <SuperAdminAdmins /> },
-          { path: "admins/create", element: <SuperAdminCreateAdmin /> },
+          // { path: "admins/create", element: <SuperAdminCreateAdmin /> },
         ],
       },
     ],
