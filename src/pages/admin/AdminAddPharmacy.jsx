@@ -5,6 +5,7 @@ import {
   EnvelopeIcon,
   PhoneIcon,
   GlobeAltIcon,
+  HomeIcon,
   LockClosedIcon,
   EyeIcon,
   EyeSlashIcon,
@@ -12,25 +13,28 @@ import {
   SunIcon,
 } from "@heroicons/react/24/outline";
 
-export default function SuperAdminAddAdmin() {
+export default function AdminAddPharmacy() {
   const [darkMode, setDarkMode] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
 
   // Controlled inputs
   const [adminName, setAdminName] = useState("");
-  const [adminPhone, setAdminPhone] = useState("");
-  const [adminEmail, setAdminEmail] = useState("");
+  const [pharmacyName, setPharmacyName] = useState("");
+  const [doctorName, setDoctorName] = useState("");
+  const [doctorPhone, setDoctorPhone] = useState("");
+  const [doctorEmail, setDoctorEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [adminLocation, setAdminLocation] = useState("");
+  const [pharmacyLocation, setPharmacyLocation] = useState("");
 
   // Locations from API
   const [locations, setLocations] = useState([]);
 
+  // Fetch locations from backend
   useEffect(() => {
     async function fetchLocations() {
       try {
-        const res = await fetch("/api/locations"); // رابط الباك للمواقع
+        const res = await fetch("/api/locations"); // رابط الباك اند لمواقع الصيدليات
         const data = await res.json();
         setLocations(data.locations || []);
       } catch (err) {
@@ -45,14 +49,16 @@ export default function SuperAdminAddAdmin() {
 
     const formData = {
       adminName,
-      adminPhone,
-      adminEmail,
+      pharmacyName,
+      doctorName,
+      doctorPhone,
+      doctorEmail,
       password,
-      adminLocation,
+      pharmacyLocation,
     };
 
     try {
-      const res = await fetch("/api/admins", {
+      const res = await fetch("/api/pharmacies", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -63,14 +69,16 @@ export default function SuperAdminAddAdmin() {
         setShowNotification(true);
         setTimeout(() => setShowNotification(false), 3000);
 
-        // Reset form
+        // مسح الفورم بعد الإرسال
         setAdminName("");
-        setAdminPhone("");
-        setAdminEmail("");
+        setPharmacyName("");
+        setDoctorName("");
+        setDoctorPhone("");
+        setDoctorEmail("");
         setPassword("");
-        setAdminLocation("");
+        setPharmacyLocation("");
       } else {
-        alert("Failed to add admin!");
+        alert("Failed to add pharmacy!");
       }
     } catch (err) {
       console.error(err);
@@ -86,11 +94,11 @@ export default function SuperAdminAddAdmin() {
           : "bg-gradient-to-br from-white via-slate-400 to blue-100"
       }`}
     >
-      {/* Dark Mode Toggle */}
+      {/* Toggle Button */}
       <button
         onClick={() => setDarkMode(!darkMode)}
         className={`absolute top-6 right-6 p-3 rounded-full shadow-lg transition ${
-          darkMode ? "bg-gray-800 text-yellow-400" : "bg-blue-100 text-blue-700"
+          darkMode ? "bg-gray-800 text-yellow-400" : "bg-white text-blue-700"
         }`}
       >
         {darkMode ? (
@@ -105,17 +113,18 @@ export default function SuperAdminAddAdmin() {
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className={`w-full max-w-4xl rounded-3xl p-10 shadow-[0_30px_50px_rgba(0,0,0,0.25)]
-          transition-colors duration-500 
-          
-          ${darkMode ? "bg-gray-900 text-gray-100" : " text-gray-900"}`}
+        className={`w-full max-w-4xl rounded-3xl shadow-[0_30px_50px_rgba(0,0,0,0.25)]
+          transition-colors duration-500
+          ${darkMode ? "bg-gray-900 text-gray-100" : "text-gray-900"}
+          max-h-[90vh] overflow-y-auto p-8
+        `}
       >
         {/* Header */}
-        <div className="text-center mb-10">
+        <div className="text-center mb-8">
           <h1
             className={`text-3xl font-bold ${darkMode ? "text-blue-300" : "text-blue-800"}`}
           >
-            Add Admin
+            Add Pharmacy
           </h1>
           <p className={`mt-2 ${darkMode ? "text-gray-400" : "text-blue-600"}`}>
             Enter the details please
@@ -123,35 +132,44 @@ export default function SuperAdminAddAdmin() {
         </div>
 
         {/* FORM */}
-        <form className="space-y-6" onSubmit={handleSubmit}>
-          {/* Admin Name */}
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          {/* Pharmacy Name */}
+          <Input
+            darkMode={darkMode}
+            icon={HomeIcon}
+            placeholder="Pharmacy Name"
+            value={pharmacyName}
+            onChange={(e) => setPharmacyName(e.target.value)}
+          />
+
+          {/* Doctor Name */}
           <Input
             darkMode={darkMode}
             icon={UserIcon}
-            placeholder="Admin Name"
-            value={adminName}
-            onChange={(e) => setAdminName(e.target.value)}
+            placeholder="Doctor Name"
+            value={doctorName}
+            onChange={(e) => setDoctorName(e.target.value)}
           />
 
-          {/* Admin Phone */}
+          {/* Doctor Phone */}
           <Input
             darkMode={darkMode}
             icon={PhoneIcon}
-            placeholder="Admin Phone"
-            value={adminPhone}
-            onChange={(e) => setAdminPhone(e.target.value)}
+            placeholder="Doctor Phone"
+            value={doctorPhone}
+            onChange={(e) => setDoctorPhone(e.target.value)}
           />
 
-          {/* Admin Email */}
+          {/* Doctor Email */}
           <Input
             darkMode={darkMode}
             icon={EnvelopeIcon}
-            placeholder="Admin Email"
-            value={adminEmail}
-            onChange={(e) => setAdminEmail(e.target.value)}
+            placeholder="Doctor Email"
+            value={doctorEmail}
+            onChange={(e) => setDoctorEmail(e.target.value)}
           />
 
-          {/* Password */}
+          {/* Password with show/hide */}
           <PasswordInput
             darkMode={darkMode}
             icon={LockClosedIcon}
@@ -162,7 +180,7 @@ export default function SuperAdminAddAdmin() {
             toggleShow={() => setShowPassword(!showPassword)}
           />
 
-          {/* Admin Location */}
+          {/* Pharmacy Location Select */}
           <div className="relative">
             <GlobeAltIcon
               className={`w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 ${
@@ -170,8 +188,8 @@ export default function SuperAdminAddAdmin() {
               }`}
             />
             <select
-              value={adminLocation}
-              onChange={(e) => setAdminLocation(e.target.value)}
+              value={pharmacyLocation}
+              onChange={(e) => setPharmacyLocation(e.target.value)}
               className={`w-full pl-10 pr-4 py-3 rounded-xl border focus:outline-none focus:ring-2 transition
                 ${darkMode ? "bg-gray-800 text-gray-100 border-gray-700 focus:ring-blue-500" : "bg-white text-gray-900 border-blue-300 focus:ring-blue-500"}
               `}
@@ -195,7 +213,7 @@ export default function SuperAdminAddAdmin() {
               hover:from-blue-700 hover:to-blue-800
               shadow-lg"
           >
-            Add Admin
+            Add Pharmacy
           </motion.button>
         </form>
       </motion.div>
@@ -210,7 +228,7 @@ export default function SuperAdminAddAdmin() {
             transition={{ duration: 0.5 }}
             className="fixed bottom-10 right-10 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg font-semibold"
           >
-            Admin added successfully!
+            Pharmacy added successfully!
           </motion.div>
         )}
       </AnimatePresence>
@@ -247,7 +265,7 @@ function Input({
   );
 }
 
-/* PASSWORD INPUT */
+/* PASSWORD INPUT WITH SHOW/HIDE */
 function PasswordInput({
   icon: Icon,
   placeholder,
@@ -273,6 +291,7 @@ function PasswordInput({
           ${darkMode ? "bg-gray-800 text-gray-100 border-gray-700 focus:ring-blue-500" : "bg-white text-gray-900 border-blue-300 focus:ring-blue-500"}
         `}
       />
+      {/* Eye icon */}
       <button
         type="button"
         onClick={toggleShow}
