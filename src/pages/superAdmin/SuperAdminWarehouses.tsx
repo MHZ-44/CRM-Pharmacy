@@ -1,3 +1,4 @@
+import DeleteDialog from "@/components/DeleteDialog";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -8,9 +9,16 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useDeleteWarehouses } from "@/hooks/superAdmin/useDeleteWarehouses";
+import { useGetWarehouses } from "@/hooks/superAdmin/useGetWarehouses";
 import { Link } from "react-router-dom";
 
 function SuperAdminWarehouses() {
+  const { data, isLoading, isError, error } = useGetWarehouses();
+  const { mutate: deleteWarehouse, isPending: isDeleting } =
+    useDeleteWarehouses();
+  const warehouses = data ?? [];
+
   return (
     <div className="min-h-full w-full bg-muted/30">
       <div className="flex w-full flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
@@ -24,7 +32,13 @@ function SuperAdminWarehouses() {
         <div className="w-full rounded-lg border bg-card shadow-sm">
           <Table className="min-w-[1100px] text-base">
             <TableCaption className="px-4 pb-4 text-left">
-              Showing 1 Warehouse
+              {isLoading
+                ? "Loading warehouses..."
+                : isError
+                  ? "Failed to load warehouses"
+                  : `Showing ${warehouses.length} warehouse${
+                      warehouses.length === 1 ? "" : "s"
+                    }`}
             </TableCaption>
             <TableHeader className="bg-muted/40">
               <TableRow className="hover:bg-transparent data-[state=selected]:bg-transparent">
@@ -50,34 +64,78 @@ function SuperAdminWarehouses() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow className="hover:bg-transparent data-[state=selected]:bg-transparent">
-                <TableCell className="px-6 py-4 text-base font-medium">
-                  مستودع عبدو
-                </TableCell>
-                <TableCell className="px-6 py-4 text-base font-medium">
-                  Muhammad Hamzah Al-masri
-                </TableCell>
-                <TableCell className="px-6 py-4 text-base text-muted-foreground">
-                  muhammad.hamzah.almasri@gmail.com
-                </TableCell>
-                <TableCell className="px-6 py-4 text-base">
-                  0992203599
-                </TableCell>
-                <TableCell className="px-6 py-4 text-base">Damascus</TableCell>
-                <TableCell className="px-6 py-4 text-base">Abdo</TableCell>
-                <TableCell className="px-6 py-4 text-base">
-                  24-10-2025
-                </TableCell>
-                <TableCell className="px-6 py-4 text-right">
-                  <Button
-                    variant="destructive"
-                    size="xs"
-                    onClick={() => console.log("hi")}
+              {isLoading ? (
+                <TableRow className="hover:bg-transparent data-[state=selected]:bg-transparent">
+                  <TableCell
+                    className="px-6 py-6 text-base text-muted-foreground"
+                    colSpan={8}
                   >
-                    Delete
-                  </Button>
-                </TableCell>
-              </TableRow>
+                    Loading warehouses...
+                  </TableCell>
+                </TableRow>
+              ) : isError ? (
+                <TableRow className="hover:bg-transparent data-[state=selected]:bg-transparent">
+                  <TableCell
+                    className="px-6 py-6 text-base text-destructive"
+                    colSpan={8}
+                  >
+                    {error?.message || "Failed to load warehouses."}
+                  </TableCell>
+                </TableRow>
+              ) : warehouses.length === 0 ? (
+                <TableRow className="hover:bg-transparent data-[state=selected]:bg-transparent">
+                  <TableCell
+                    className="px-6 py-6 text-base text-muted-foreground"
+                    colSpan={8}
+                  >
+                    No warehouses found.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                warehouses.map((warehouse) => (
+                  <TableRow
+                    key={warehouse.id}
+                    className="hover:bg-transparent data-[state=selected]:bg-transparent"
+                  >
+                    <TableCell className="px-6 py-4 text-base font-medium">
+                      {warehouse.warehouseName}
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-base font-medium">
+                      {warehouse.ownerName}
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-base text-muted-foreground">
+                      {warehouse.email}
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-base">
+                      {warehouse.phone}
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-base">
+                      {warehouse.regionName}
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-base">
+                      {warehouse.adminAddIt}
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-base">
+                      {warehouse.addedDate}
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-right">
+                      <DeleteDialog
+                        title="Delete warehouse ?"
+                        description="This action cannot be undone."
+                        onConfirm={() =>
+                          deleteWarehouse(warehouse.id.toString())
+                        }
+                        isPending={isDeleting}
+                        trigger={
+                          <Button variant="destructive" size="xs">
+                            Delete
+                          </Button>
+                        }
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </div>

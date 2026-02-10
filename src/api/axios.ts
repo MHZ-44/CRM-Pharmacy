@@ -3,13 +3,13 @@ import axios, { AxiosError } from "axios";
 import type { ErrorResponse } from "react-router-dom";
 
 const axiosInstance = axios.create({
-  // baseURL: "http://localhost:3000",
-  baseURL: import.meta.env.VITE_BACKEND_URL,
+  baseURL: "http://127.0.0.1:8000",
   timeout: 10000,
 });
 
 axiosInstance.interceptors.request.use((config) => {
-  const token = getLsValue("token");
+  const token = "2|V50AAQYjcOmSs7XX7NI9frOmA2GEBA0v4frA3xgO35ebb24d";
+  // getLsValue("token");
   if (token) {
     config.headers = config.headers ?? {};
     config.headers.Authorization = `Bearer ${token}`;
