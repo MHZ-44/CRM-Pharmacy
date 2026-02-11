@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import DeleteDialog from "@/components/DeleteDialog";
 import {
   Table,
   TableBody,
@@ -8,9 +9,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useDeleteAdmin } from "@/hooks/superAdmin/useDeleteAdmin";
+import { useGetAdmins } from "@/hooks/superAdmin/useGetAdmins";
 import { Link } from "react-router-dom";
 
 function SuperAdminAdmins() {
+  const { data, isLoading, isError, error } = useGetAdmins();
+  const admins = data ?? [];
+  const { mutate: deleteAdmin, isPending: isDeleting } = useDeleteAdmin();
+
   return (
     <div
       className="min-h-full w-full 
@@ -37,11 +44,17 @@ function SuperAdminAdmins() {
         {/* الجدول */}
         <div className="w-full rounded-lg border bg-white dark:bg-gray-900 shadow-lg">
           <Table className="min-w-[1100px] text-base">
-            <TableCaption className="px-4 pb-4 text-left text-blue-700 dark:text-blue-300">
-              Showing 1 admin
+            <TableCaption className="px-4 pb-4 text-left">
+              {isLoading
+                ? "Loading admins..."
+                : isError
+                ? "Failed to load admins"
+                : admins.length === 0
+                ? "No admins found"
+                : `Showing ${admins.length} admin${admins.length === 1 ? "" : "s"}`}
             </TableCaption>
             <TableHeader className="bg-blue-100 dark:bg-gray-800">
-              <TableRow className="hover:bg-transparent data-[state=selected]:bg-transparent">
+              <TableRow>
                 <TableHead className="w-[240px] px-6 py-4 text-base text-blue-800 dark:text-blue-300">
                   Name
                 </TableHead>
@@ -60,30 +73,59 @@ function SuperAdminAdmins() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow className="hover:bg-blue-50 dark:hover:bg-gray-800">
-                <TableCell className="px-6 py-4 text-base font-medium text-blue-900 dark:text-blue-200">
-                  Muhammad Hamzah Al-masri
-                </TableCell>
-                <TableCell className="px-6 py-4 text-base text-gray-600 dark:text-gray-400">
-                  muhammad.hamzah.almasri@gmail.com
-                </TableCell>
-                <TableCell className="px-6 py-4 text-base text-blue-900 dark:text-blue-200">
-                  0992203599
-                </TableCell>
-                <TableCell className="px-6 py-4 text-base text-blue-900 dark:text-blue-200">
-                  Damascus
-                </TableCell>
-                <TableCell className="px-6 py-4 text-right">
-                  <Button
-                    variant="destructive"
-                    size="xs"
-                    className="bg-red-600 text-white hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600"
-                    onClick={() => console.log("hi")}
-                  >
-                    Delete
-                  </Button>
-                </TableCell>
-              </TableRow>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="px-6 py-6 text-base text-muted-foreground">
+                    Loading admins...
+                  </TableCell>
+                </TableRow>
+              ) : isError ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="px-6 py-6 text-base text-destructive">
+                    {error?.message || "Failed to load admins."}
+                  </TableCell>
+                </TableRow>
+              ) : admins.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={5} className="px-6 py-6 text-base text-muted-foreground">
+                    No admins found.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                admins.map((admin) => (
+                  <TableRow key={admin.id}>
+                    <TableCell className="px-6 py-4 text-base font-medium text-blue-900 dark:text-blue-200">
+                      {admin.name}
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-base text-gray-600 dark:text-gray-400">
+                      {admin.email}
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-base text-blue-900 dark:text-blue-200">
+                      {admin.phone}
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-base text-blue-900 dark:text-blue-200">
+                      {admin.regionName}
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-right">
+                      <DeleteDialog
+                        title="Delete admin?"
+                        description="This action cannot be undone."
+                        onConfirm={() => deleteAdmin(admin.id.toString())}
+                        isPending={isDeleting}
+                        trigger={
+                          <Button
+                            variant="destructive"
+                            size="xs"
+                            className="bg-red-600 text-white hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600"
+                          >
+                            Delete
+                          </Button>
+                        }
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </div>

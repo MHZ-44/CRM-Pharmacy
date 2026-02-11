@@ -1,8 +1,5 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-
-
-
+import { motion, AnimatePresence } from "framer-motion";
 import {
   UserIcon,
   EnvelopeIcon,
@@ -16,7 +13,7 @@ import {
   HomeIcon,
 } from "@heroicons/react/24/outline";
 
-export default function SuperAdminAddWarehouse() {
+export default function AdminAddWarehouse() {
   const [darkMode, setDarkMode] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
 

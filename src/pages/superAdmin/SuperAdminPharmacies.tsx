@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import DeleteDialog from "@/components/DeleteDialog";
 import {
   Table,
   TableBody,
@@ -8,9 +9,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useDeletePharmacy } from "@/hooks/superAdmin/useDeletePharmacy";
+import { useGetPharmacies } from "@/hooks/superAdmin/useGetPharmacies";
 import { Link } from "react-router-dom";
 
 function SuperAdminPharmacies() {
+  const { data, isLoading, isError, error } = useGetPharmacies();
+  const { mutate: deletePharmacy, isPending: isDeleting } = useDeletePharmacy();
+  const pharmacies = data ?? [];
+
   return (
     <div
       className="min-h-full w-full 
@@ -38,10 +45,16 @@ function SuperAdminPharmacies() {
         <div className="w-full rounded-lg border bg-white dark:bg-gray-900 shadow-lg">
           <Table className="min-w-[1100px] text-base">
             <TableCaption className="px-4 pb-4 text-left text-blue-700 dark:text-blue-300">
-              Showing 1 pharmacy
+              {isLoading
+                ? "Loading pharmacies..."
+                : isError
+                ? "Failed to load pharmacies"
+                : pharmacies.length === 0
+                ? "No pharmacies found"
+                : `Showing ${pharmacies.length} pharmacy${pharmacies.length === 1 ? "" : "ies"}`}
             </TableCaption>
             <TableHeader className="bg-blue-100 dark:bg-gray-800">
-              <TableRow className="hover:bg-transparent data-[state=selected]:bg-transparent">
+              <TableRow>
                 <TableHead className="w-[240px] px-6 py-4 text-base text-blue-800 dark:text-blue-300">
                   Pharmacy Name
                 </TableHead>
@@ -69,39 +82,64 @@ function SuperAdminPharmacies() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              <TableRow className="hover:bg-blue-50 dark:hover:bg-gray-800">
-                <TableCell className="px-6 py-4 text-base font-medium text-blue-900 dark:text-blue-200">
-                  صيدلية الشربيشات
-                </TableCell>
-                <TableCell className="px-6 py-4 text-base font-medium text-blue-900 dark:text-blue-200">
-                  Muhammad Hamzah Al-masri
-                </TableCell>
-                <TableCell className="px-6 py-4 text-base text-gray-600 dark:text-gray-400">
-                  muhammad.hamzah.almasri@gmail.com
-                </TableCell>
-                <TableCell className="px-6 py-4 text-base text-blue-900 dark:text-blue-200">
-                  0992203599
-                </TableCell>
-                <TableCell className="px-6 py-4 text-base text-blue-900 dark:text-blue-200">
-                  Damascus
-                </TableCell>
-                <TableCell className="px-6 py-4 text-base text-blue-900 dark:text-blue-200">
-                  Abdo
-                </TableCell>
-                <TableCell className="px-6 py-4 text-base text-blue-900 dark:text-blue-200">
-                  24-10-2025
-                </TableCell>
-                <TableCell className="px-6 py-4 text-right">
-                  <Button
-                    variant="destructive"
-                    size="xs"
-                    className="bg-red-600 text-white hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600"
-                    onClick={() => console.log("hi")}
-                  >
-                    Delete
-                  </Button>
-                </TableCell>
-              </TableRow>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="px-6 py-6 text-base text-muted-foreground">
+                    Loading pharmacies...
+                  </TableCell>
+                </TableRow>
+              ) : isError ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="px-6 py-6 text-base text-destructive">
+                    {error?.message || "Failed to load pharmacies."}
+                  </TableCell>
+                </TableRow>
+              ) : pharmacies.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={8} className="px-6 py-6 text-base text-muted-foreground">
+                    No pharmacies found.
+                  </TableCell>
+                </TableRow>
+              ) : (
+                pharmacies.map((pharmacy) => (
+                  <TableRow key={pharmacy.id}>
+                    <TableCell className="px-6 py-4 text-base font-medium">
+                      {pharmacy.pharmacyName}
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-base font-medium">
+                      {pharmacy.doctorName}
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-base text-muted-foreground">
+                      {pharmacy.email}
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-base">
+                      {pharmacy.phone}
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-base">
+                      {pharmacy.regionName}
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-base">
+                      {pharmacy.adminAddIt}
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-base">
+                      {pharmacy.addedDate}
+                    </TableCell>
+                    <TableCell className="px-6 py-4 text-right">
+                      <DeleteDialog
+                        title="Delete pharmacy ?"
+                        description="This action cannot be undone."
+                        onConfirm={() => deletePharmacy(pharmacy.id.toString())}
+                        isPending={isDeleting}
+                        trigger={
+                          <Button variant="destructive" size="xs">
+                            Delete
+                          </Button>
+                        }
+                      />
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
             </TableBody>
           </Table>
         </div>

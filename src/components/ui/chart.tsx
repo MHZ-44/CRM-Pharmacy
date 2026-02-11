@@ -1,10 +1,5 @@
 import * as React from "react";
-import {
-  Tooltip as RechartsTooltip,
-  type TooltipProps,
-  type ValueType,
-  type NameType,
-} from "recharts";
+import { Tooltip as RechartsTooltip, type TooltipProps } from "recharts";
 
 import { cn } from "@/lib/utils";
 
@@ -27,15 +22,13 @@ function ChartContainer({
   children,
   ...props
 }: ChartContainerProps) {
-  const cssVars = Object.entries(config).reduce(
-    (acc, [key, value]) => {
-      if (value?.color) {
-        acc[`--color-${key}` as keyof React.CSSProperties] = value.color;
-      }
-      return acc;
-    },
-    {} as React.CSSProperties
-  );
+  const cssVars: React.CSSProperties & Record<string, string> = {};
+
+  Object.entries(config).forEach(([key, value]) => {
+    if (value?.color) {
+      cssVars[`--color-${key}`] = value.color;
+    }
+  });
 
   return (
     <div
@@ -51,7 +44,7 @@ function ChartContainer({
 
 type ChartTooltipContentProps = {
   hideLabel?: boolean;
-} & TooltipProps<ValueType, NameType>;
+} & TooltipProps<number | string, string | number>;
 
 function ChartTooltipContent({
   active,

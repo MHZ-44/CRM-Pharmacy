@@ -13,7 +13,7 @@ import {
   SunIcon,
 } from "@heroicons/react/24/outline";
 
-export default function AddPharmacy() {
+export default function SuperAdminAddPharmacy() {
   const [darkMode, setDarkMode] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
 
@@ -96,6 +96,18 @@ export default function AddPharmacy() {
     >
       {/* Toggle Button */}
       
+      <button
+        onClick={() => setDarkMode(!darkMode)}
+        className={`absolute top-6 right-6 p-3 rounded-full shadow-lg transition ${
+          darkMode ? "bg-gray-800 text-yellow-400" : "bg-white text-blue-700"
+        }`}
+      >
+        {darkMode ? (
+          <SunIcon className="w-6 h-6" />
+        ) : (
+          <MoonIcon className="w-6 h-6" />
+        )}
+      </button>
 
       {/* SINGLE CARD */}
       <motion.div
@@ -104,14 +116,15 @@ export default function AddPharmacy() {
         transition={{ duration: 0.6 }}
         className={`w-full max-w-4xl rounded-3xl shadow-[0_30px_50px_rgba(0,0,0,0.25)]
           transition-colors duration-500
-          ${darkMode ? "bg-gray-900 text-gray-100" 
-                     : "text-gray-900"}
+          ${darkMode ? "bg-gray-900 text-gray-100" : "text-gray-900"}
           max-h-[90vh] overflow-y-auto p-8
         `}
       >
         {/* Header */}
         <div className="text-center mb-8">
-          <h1 className={`text-3xl font-bold ${darkMode ? "text-blue-300" : "text-blue-800"}`}>
+          <h1
+            className={`text-3xl font-bold ${darkMode ? "text-blue-300" : "text-blue-800"}`}
+          >
             Add Pharmacy
           </h1>
           <p className={`mt-2 ${darkMode ? "text-gray-400" : "text-blue-600"}`}>
@@ -121,8 +134,6 @@ export default function AddPharmacy() {
 
         {/* FORM */}
         <form className="space-y-4" onSubmit={handleSubmit}>
-         
-
           {/* Pharmacy Name */}
           <Input
             darkMode={darkMode}
@@ -227,7 +238,14 @@ export default function AddPharmacy() {
 }
 
 /* INPUT COMPONENT */
-function Input({ icon: Icon, placeholder, darkMode, type = "text", value, onChange }) {
+function Input({
+  icon: Icon,
+  placeholder,
+  darkMode,
+  type = "text",
+  value,
+  onChange,
+}) {
   return (
     <div className="relative">
       <Icon
@@ -249,7 +267,15 @@ function Input({ icon: Icon, placeholder, darkMode, type = "text", value, onChan
 }
 
 /* PASSWORD INPUT WITH SHOW/HIDE */
-function PasswordInput({ icon: Icon, placeholder, darkMode, value, onChange, showPassword, toggleShow }) {
+function PasswordInput({
+  icon: Icon,
+  placeholder,
+  darkMode,
+  value,
+  onChange,
+  showPassword,
+  toggleShow,
+}) {
   return (
     <div className="relative">
       <Icon
@@ -273,7 +299,11 @@ function PasswordInput({ icon: Icon, placeholder, darkMode, value, onChange, sho
         onClick={toggleShow}
         className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
       >
-        {showPassword ? <EyeSlashIcon className="w-5 h-5" /> : <EyeIcon className="w-5 h-5" />}
+        {showPassword ? (
+          <EyeSlashIcon className="w-5 h-5" />
+        ) : (
+          <EyeIcon className="w-5 h-5" />
+        )}
       </button>
     </div>
   );

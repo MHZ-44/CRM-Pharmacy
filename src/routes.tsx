@@ -34,8 +34,7 @@ const router = createBrowserRouter([
           { path: "pharmacies", element: <SuperAdminPharmacies /> },
           { path: "add-pharmacy", element: <SuperAdminAddPharmacy /> },
           { path: "warehouses", element: <SuperAdminWarehouses /> },
-          { path: "add-warehouse",element: <SuperAdminAddWarehouse />,},
-
+          { path: "warehouses/create", element: <SuperAdminAddWarehouse /> },
           { path: "admins", element: <SuperAdminAdmins /> },
           { path: "add-admin", element: <SuperAdminAddAdmin /> },
         ],
