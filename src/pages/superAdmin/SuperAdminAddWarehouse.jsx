@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-
-
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { LOCATIONS } from "@/lib/locations";
+import { useCreateWarehouse } from "@/hooks/superAdmin/useCreateWarehouse";
 
 import {
   UserIcon,
@@ -19,6 +19,7 @@ import {
 export default function SuperAdminAddWarehouse() {
   const [darkMode, setDarkMode] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
+  const { mutate: createWarehouse, isPending } = useCreateWarehouse();
 
   // Controlled inputs
   const [warehouseName, setWarehouseName] = useState("");
@@ -29,61 +30,34 @@ export default function SuperAdminAddWarehouse() {
   const [showPassword, setShowPassword] = useState(false);
   const [warehouseLocation, setWarehouseLocation] = useState("");
 
-  // Locations from API
-  const [locations, setLocations] = useState([]);
-
-  // Fetch locations from backend
-  useEffect(() => {
-    async function fetchLocations() {
-      try {
-        const res = await fetch("/api/locations"); // رابط الباك اند للمواقع
-        const data = await res.json();
-        setLocations(data.locations || []);
-      } catch (err) {
-        console.error("Failed to fetch locations:", err);
-      }
-    }
-    fetchLocations();
-  }, []);
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     const formData = {
-      warehouseName,
-      ownerName,
-      ownerPhone,
-      ownerEmail,
+      warehouse_name: warehouseName,
+      owner_name: ownerName,
+      owner_phone: ownerPhone,
+      owner_email: ownerEmail,
       password,
-      warehouseLocation,
+      region_id: warehouseLocation,
     };
 
-    try {
-      const res = await fetch("/api/warehouses", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await res.json();
-      if (data.success) {
+    createWarehouse(formData, {
+      onSuccess: () => {
         setShowNotification(true);
         setTimeout(() => setShowNotification(false), 3000);
 
-        // Reset form
         setWarehouseName("");
         setOwnerName("");
         setOwnerPhone("");
         setOwnerEmail("");
         setPassword("");
         setWarehouseLocation("");
-      } else {
+      },
+      onError: () => {
         alert("Failed to add warehouse!");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Error connecting to server!");
-    }
+      },
+    });
   };
 
   return (
@@ -193,9 +167,9 @@ export default function SuperAdminAddWarehouse() {
               `}
             >
               <option value="">Select Location</option>
-              {locations.map((loc) => (
-                <option key={loc.id} value={loc.name}>
-                  {loc.name}
+              {LOCATIONS.map((loc) => (
+                <option key={loc.value} value={loc.value}>
+                  {loc.label}
                 </option>
               ))}
             </select>
@@ -206,12 +180,13 @@ export default function SuperAdminAddWarehouse() {
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             type="submit"
+            disabled={isPending}
             className="w-full py-3 rounded-xl font-semibold text-blue-100
               bg-gradient-to-r from-blue-500 to-blue-700
               hover:from-blue-700 hover:to-blue-800
-              shadow-lg"
+              shadow-lg disabled:cursor-not-allowed disabled:opacity-70"
           >
-            Add Warehouse
+            {isPending ? "Adding..." : "Add Warehouse"}
           </motion.button>
         </form>
       </motion.div>

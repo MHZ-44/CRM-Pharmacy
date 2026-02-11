@@ -1,5 +1,8 @@
-import { useState, useEffect } from "react";
+import { use, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { LOCATIONS } from "@/lib/locations";
+import { useCreatePharmacy } from "@/hooks/superAdmin/useCreatePharmacy";
+
 import {
   UserIcon,
   EnvelopeIcon,
@@ -16,9 +19,9 @@ import {
 export default function SuperAdminAddPharmacy() {
   const [darkMode, setDarkMode] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
+  const { mutate: createPharmacy, isPending } = useCreatePharmacy();
 
   // Controlled inputs
-  const [adminName, setAdminName] = useState("");
   const [pharmacyName, setPharmacyName] = useState("");
   const [doctorName, setDoctorName] = useState("");
   const [doctorPhone, setDoctorPhone] = useState("");
@@ -27,49 +30,23 @@ export default function SuperAdminAddPharmacy() {
   const [showPassword, setShowPassword] = useState(false);
   const [pharmacyLocation, setPharmacyLocation] = useState("");
 
-  // Locations from API
-  const [locations, setLocations] = useState([]);
-
-  // Fetch locations from backend
-  useEffect(() => {
-    async function fetchLocations() {
-      try {
-        const res = await fetch("/api/locations"); // رابط الباك اند لمواقع الصيدليات
-        const data = await res.json();
-        setLocations(data.locations || []);
-      } catch (err) {
-        console.error("Failed to fetch locations:", err);
-      }
-    }
-    fetchLocations();
-  }, []);
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     const formData = {
-      adminName,
-      pharmacyName,
-      doctorName,
-      doctorPhone,
-      doctorEmail,
+      pharmacy_name: pharmacyName,
+      doctor_name: doctorName,
+      doctor_phone: doctorPhone,
+      doctor_email: doctorEmail,
       password,
-      pharmacyLocation,
+      region_id: pharmacyLocation,
     };
 
-    try {
-      const res = await fetch("/api/pharmacies", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await res.json();
-      if (data.success) {
+    createPharmacy(formData, {
+      onSuccess: () => {
         setShowNotification(true);
         setTimeout(() => setShowNotification(false), 3000);
 
-        // مسح الفورم بعد الإرسال
         setAdminName("");
         setPharmacyName("");
         setDoctorName("");
@@ -77,13 +54,11 @@ export default function SuperAdminAddPharmacy() {
         setDoctorEmail("");
         setPassword("");
         setPharmacyLocation("");
-      } else {
+      },
+      onError: () => {
         alert("Failed to add pharmacy!");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Error connecting to server!");
-    }
+      },
+    });
   };
 
   return (
@@ -95,7 +70,7 @@ export default function SuperAdminAddPharmacy() {
       }`}
     >
       {/* Toggle Button */}
-      
+
       <button
         onClick={() => setDarkMode(!darkMode)}
         className={`absolute top-6 right-6 p-3 rounded-full shadow-lg transition ${
@@ -196,9 +171,9 @@ export default function SuperAdminAddPharmacy() {
               `}
             >
               <option value="">Select Location</option>
-              {locations.map((loc) => (
-                <option key={loc.id} value={loc.name}>
-                  {loc.name}
+              {LOCATIONS.map((loc) => (
+                <option key={loc.value} value={loc.value}>
+                  {loc.label}
                 </option>
               ))}
             </select>
@@ -209,12 +184,13 @@ export default function SuperAdminAddPharmacy() {
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             type="submit"
+            disabled={isPending}
             className="w-full py-3 rounded-xl font-semibold text-blue-100
               bg-gradient-to-r from-blue-500 to-blue-700
               hover:from-blue-700 hover:to-blue-800
-              shadow-lg"
+              shadow-lg disabled:cursor-not-allowed disabled:opacity-70"
           >
-            Add Pharmacy
+            {isPending ? "Adding..." : "Add Pharmacy"}
           </motion.button>
         </form>
       </motion.div>
@@ -289,8 +265,11 @@ function PasswordInput({
         value={value}
         onChange={onChange}
         className={`w-full pl-10 pr-10 py-3 rounded-xl border focus:outline-none focus:ring-2 transition
-          ${darkMode ? "bg-gray-800 text-gray-100 border-gray-700 focus:ring-blue-500" 
-            : "bg-white text-gray-900 border-blue-300 focus:ring-blue-500"}
+          ${
+            darkMode
+              ? "bg-gray-800 text-gray-100 border-gray-700 focus:ring-blue-500"
+              : "bg-white text-gray-900 border-blue-300 focus:ring-blue-500"
+          }
         `}
       />
       {/* Eye icon */}

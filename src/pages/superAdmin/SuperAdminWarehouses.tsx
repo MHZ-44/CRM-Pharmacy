@@ -15,7 +15,8 @@ import { Link } from "react-router-dom";
 
 function SuperAdminWarehouses() {
   const { data, isLoading, isError, error } = useGetWarehouses();
-  const { mutate: deleteWarehouse, isPending: isDeleting } = useDeleteWarehouses();
+  const { mutate: deleteWarehouse, isPending: isDeleting } =
+    useDeleteWarehouses();
   const warehouses = data ?? [];
 
   return (
@@ -31,7 +32,7 @@ function SuperAdminWarehouses() {
           <h1 className="text-3xl font-semibold tracking-tight text-blue-800 dark:text-blue-300">
             Warehouses
           </h1>
-          <Link to={"create"}>
+          <Link to={"/warehouses/create"}>
             <Button
               size="sm"
               className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-400 dark:hover:bg-blue-500"
@@ -48,10 +49,10 @@ function SuperAdminWarehouses() {
               {isLoading
                 ? "Loading warehouses..."
                 : isError
-                ? "Failed to load warehouses"
-                : warehouses.length === 0
-                ? "No warehouses found"
-                : `Showing ${warehouses.length} warehouse${warehouses.length === 1 ? "" : "s"}`}
+                  ? "Failed to load warehouses"
+                  : warehouses.length === 0
+                    ? "No warehouses found"
+                    : `Showing ${warehouses.length} warehouse${warehouses.length === 1 ? "" : "s"}`}
             </TableCaption>
             <TableHeader className="bg-blue-100 dark:bg-gray-800">
               <TableRow>
@@ -84,19 +85,28 @@ function SuperAdminWarehouses() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="px-6 py-6 text-base text-muted-foreground">
+                  <TableCell
+                    colSpan={8}
+                    className="px-6 py-6 text-base text-muted-foreground"
+                  >
                     Loading warehouses...
                   </TableCell>
                 </TableRow>
               ) : isError ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="px-6 py-6 text-base text-destructive">
+                  <TableCell
+                    colSpan={8}
+                    className="px-6 py-6 text-base text-destructive"
+                  >
                     {error?.message || "Failed to load warehouses."}
                   </TableCell>
                 </TableRow>
               ) : warehouses.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="px-6 py-6 text-base text-muted-foreground">
+                  <TableCell
+                    colSpan={8}
+                    className="px-6 py-6 text-base text-muted-foreground"
+                  >
                     No warehouses found.
                   </TableCell>
                 </TableRow>
@@ -128,7 +138,9 @@ function SuperAdminWarehouses() {
                       <DeleteDialog
                         title="Delete warehouse ?"
                         description="This action cannot be undone."
-                        onConfirm={() => deleteWarehouse(warehouse.id.toString())}
+                        onConfirm={() =>
+                          deleteWarehouse(warehouse.id.toString())
+                        }
                         isPending={isDeleting}
                         trigger={
                           <Button variant="destructive" size="xs">

@@ -31,7 +31,7 @@ function SuperAdminPharmacies() {
           <h1 className="text-3xl font-semibold tracking-tight text-blue-800 dark:text-blue-300">
             Pharmacies
           </h1>
-          <Link to={"create"}>
+          <Link to={"/pharmacies/create"}>
             <Button
               size="sm"
               className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-400 dark:hover:bg-blue-500"
@@ -48,10 +48,10 @@ function SuperAdminPharmacies() {
               {isLoading
                 ? "Loading pharmacies..."
                 : isError
-                ? "Failed to load pharmacies"
-                : pharmacies.length === 0
-                ? "No pharmacies found"
-                : `Showing ${pharmacies.length} pharmacy${pharmacies.length === 1 ? "" : "ies"}`}
+                  ? "Failed to load pharmacies"
+                  : pharmacies.length === 0
+                    ? "No pharmacies found"
+                    : `Showing ${pharmacies.length} pharmacy${pharmacies.length === 1 ? "" : "ies"}`}
             </TableCaption>
             <TableHeader className="bg-blue-100 dark:bg-gray-800">
               <TableRow>
@@ -84,19 +84,28 @@ function SuperAdminPharmacies() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="px-6 py-6 text-base text-muted-foreground">
+                  <TableCell
+                    colSpan={8}
+                    className="px-6 py-6 text-base text-muted-foreground"
+                  >
                     Loading pharmacies...
                   </TableCell>
                 </TableRow>
               ) : isError ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="px-6 py-6 text-base text-destructive">
+                  <TableCell
+                    colSpan={8}
+                    className="px-6 py-6 text-base text-destructive"
+                  >
                     {error?.message || "Failed to load pharmacies."}
                   </TableCell>
                 </TableRow>
               ) : pharmacies.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="px-6 py-6 text-base text-muted-foreground">
+                  <TableCell
+                    colSpan={8}
+                    className="px-6 py-6 text-base text-muted-foreground"
+                  >
                     No pharmacies found.
                   </TableCell>
                 </TableRow>

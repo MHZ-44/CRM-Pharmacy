@@ -31,20 +31,25 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useGetCountPharmacies } from "@/hooks/superAdmin/useGetCountPharmacies";
+import { useGetCountWarehouses } from "@/hooks/superAdmin/useGetCountWarehouses";
+import { useGetCountAdmins } from "@/hooks/superAdmin/useGetCountAdmins";
+import { useGetCountPharmaciesByRegion } from "@/hooks/superAdmin/useGetCountPharmaciesByRegion";
+import { useGetCountWarehousesByRegion } from "@/hooks/superAdmin/useGetCountWarehousesByRegion";
+import { useGetCountAdminsByRegion } from "@/hooks/superAdmin/useGetCountAdminsByRegion";
+import { useGetCountPharmaciesByAdmin } from "@/hooks/superAdmin/useGetCountPharmaciesByAdmin";
+import { useGetCountWarehousesByAdmin } from "@/hooks/superAdmin/useGetCountWarehousesByAdmin";
 
 // الإحصائيات الرئيسية
 const statCards = [
-  { title: "Total Admins", value: "24" },
-  { title: "Total Pharmacies", value: "128" },
-  { title: "Total Warehouses", value: "18" },
+  { title: "Total Admins", value: 0 },
+  { title: "Total Pharmacies", value: 0 },
+  { title: "Total Warehouses", value: 0 },
 ];
 
 // إحصائيات كل موقع
-const locationStats = LOCATIONS.map((location, index) => ({
+const locationStatsBase = LOCATIONS.map((location) => ({
   location: location.label,
-  admins: [4, 6, 3, 5, 2, 4, 3, 5, 2, 3][index] ?? 0,
-  pharmacies: [18, 24, 12, 20, 9, 14, 10, 16, 8, 11][index] ?? 0,
-  warehouses: [2, 3, 1, 2, 1, 2, 1, 3, 1, 2][index] ?? 0,
 }));
 
 // ألوان المخططات
@@ -65,18 +70,40 @@ const chartConfig = {
   warehouses: { label: "Warehouses", color: "var(--chart-3)" },
 } satisfies ChartConfig;
 
-// بيانات الصيدليات لكل مسؤول
-const adminPharmacyData = [
-  { admin: "Hamzah", pharmacies: 22 },
-  { admin: "Ahmed", pharmacies: 16 },
-  { admin: "Yara", pharmacies: 14 },
-  { admin: "Lina", pharmacies: 11 },
-  { admin: "Omar", pharmacies: 9 },
-];
-
 function SuperAdminHomePage() {
   const [metric, setMetric] = useState<"admins" | "pharmacies" | "warehouses">(
-    "admins"
+    "admins",
+  );
+  const [adminMetric, setAdminMetric] = useState<"pharmacies" | "warehouses">(
+    "pharmacies",
+  );
+
+  const { data: pharmaciesCount = 0 } = useGetCountPharmacies();
+  const { data: warehousesCount = 0 } = useGetCountWarehouses();
+  const { data: adminsCount = 0 } = useGetCountAdmins();
+  const { data: pharmaciesByRegion } = useGetCountPharmaciesByRegion();
+  const { data: warehousesCountByRegion } = useGetCountWarehousesByRegion();
+  const { data: adminsByRegion } = useGetCountAdminsByRegion();
+  const { data: pharmaciesByAdmin } = useGetCountPharmaciesByAdmin();
+  const { data: warehousesByAdmin } = useGetCountWarehousesByAdmin();
+  const locationStats = useMemo(
+    () =>
+      locationStatsBase.map((location) => {
+        const region = location.location;
+        return {
+          ...location,
+          admins:
+            adminsByRegion?.find((item) => item.name === region)
+              ?.admins_count ?? 0,
+          pharmacies:
+            pharmaciesByRegion?.find((item) => item.name === region)
+              ?.pharmacies_count ?? 0,
+          warehouses:
+            warehousesCountByRegion?.find((item) => item.name === region)
+              ?.warehouses_count ?? 0,
+        };
+      }),
+    [adminsByRegion, pharmaciesByRegion, warehousesCountByRegion],
   );
 
   const pieData = useMemo(
@@ -86,11 +113,35 @@ function SuperAdminHomePage() {
         value: item[metric],
         fill: chartColors[index % chartColors.length],
       })),
-    [metric]
+    [locationStats, metric],
   );
 
+  const adminData = useMemo(() => {
+    if (adminMetric === "warehouses") {
+      return (warehousesByAdmin ?? []).map((item) => ({
+        admin: item.name,
+        warehouses: item.warehouses_count ?? 0,
+      }));
+    }
+
+    return (pharmaciesByAdmin ?? []).map((item) => ({
+      admin: item.name,
+      pharmacies: item.pharmacies_count ?? 0,
+    }));
+  }, [adminMetric, pharmaciesByAdmin, warehousesByAdmin]);
+
+  const adminChartTitle =
+    adminMetric === "warehouses"
+      ? "Warehouses Per Admin"
+      : "Pharmacies Per Admin";
+
+  statCards[0].value = adminsCount;
+  statCards[1].value = pharmaciesCount;
+  statCards[2].value = warehousesCount;
+
   return (
-    <div className="min-h-full w-full 
+    <div
+      className="min-h-full w-full 
       bg-gradient-to-br from-white via-slate-200 to-blue-100
       dark:from-gray-900 dark:via-slate-900 dark:to-blue-950
       transition-colors duration-500"
@@ -160,19 +211,33 @@ function SuperAdminHomePage() {
             <CardFooter className="hidden" />
           </Card>
 
-          {/* مخطط الصيدليات لكل مسؤول */}
+          {/* مخطط البيانات لكل مسؤول */}
           <Card className="bg-white dark:bg-gray-900 shadow-lg rounded-xl">
-            <CardHeader>
+            <CardHeader className="flex flex-row items-center justify-between gap-4 pb-0">
               <CardTitle className="text-blue-800 dark:text-blue-300">
-                Pharmacies Per Admin
+                {adminChartTitle}
               </CardTitle>
+              <Select
+                value={adminMetric}
+                onValueChange={(value) =>
+                  setAdminMetric(value as "pharmacies" | "warehouses")
+                }
+              >
+                <SelectTrigger className="h-10 w-[180px] bg-blue-100 text-blue-700 dark:bg-gray-700 dark:text-blue-300 rounded-lg shadow-sm">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pharmacies">Pharmacies</SelectItem>
+                  <SelectItem value="warehouses">Warehouses</SelectItem>
+                </SelectContent>
+              </Select>
             </CardHeader>
             <CardContent>
               <ChartContainer config={chartConfig}>
                 <ResponsiveContainer width="100%" height={260}>
                   <BarChart
                     accessibilityLayer
-                    data={adminPharmacyData}
+                    data={adminData}
                     margin={{ top: 20 }}
                   >
                     <CartesianGrid
@@ -191,8 +256,12 @@ function SuperAdminHomePage() {
                       content={<ChartTooltipContent hideLabel />}
                     />
                     <Bar
-                      dataKey="pharmacies"
-                      fill="color-mix(in oklch, oklch(0.75 0.12 240) 85%, white)"
+                      dataKey={adminMetric}
+                      fill={
+                        adminMetric === "warehouses"
+                          ? "color-mix(in oklch, oklch(0.74 0.12 190) 85%, white)"
+                          : "color-mix(in oklch, oklch(0.75 0.12 240) 85%, white)"
+                      }
                       radius={8}
                     >
                       <LabelList

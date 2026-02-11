@@ -5,7 +5,7 @@ import { Outlet } from "react-router-dom";
 
 export function AppLayout() {
   return (
-    <SidebarProvider>
+    <SidebarProvider defaultOpen={false}>
       <div className="flex min-h-svh w-full flex-col">
         <Navbar />
         <div className="flex min-h-0 w-full flex-1">

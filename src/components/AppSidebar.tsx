@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import {
   Sidebar,
   SidebarContent,
@@ -5,6 +6,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { DEFAULT_ROLE, type Role, getStoredRole } from "@/lib/roles";
 import { FiHome } from "react-icons/fi";
@@ -47,12 +49,24 @@ const sidebarItemsByRole: Record<Role, SidebarItem[]> = {
 
 export function AppSidebar() {
   const location = useLocation();
+  const { isMobile, open, setOpen } = useSidebar();
+  const expandedByHoverRef = useRef(false);
   const role = getStoredRole() ?? DEFAULT_ROLE;
   const sidebarItems = sidebarItemsByRole[role];
 
   return (
     <Sidebar
       collapsible="icon"
+      onMouseEnter={() => {
+        if (isMobile || open) return;
+        expandedByHoverRef.current = true;
+        setOpen(true);
+      }}
+      onMouseLeave={() => {
+        if (isMobile || !expandedByHoverRef.current) return;
+        expandedByHoverRef.current = false;
+        setOpen(false);
+      }}
       className="top-16 h-[calc(100svh-4rem)]
         bg-gradient-to-b from-white via-slate-200 to-blue-100
         dark:from-gray-900 dark:via-slate-900 dark:to-blue-950

@@ -31,7 +31,7 @@ function SuperAdminAdmins() {
           <h1 className="text-3xl font-semibold tracking-tight text-blue-800 dark:text-blue-300">
             Admins
           </h1>
-          <Link to={"create"}>
+          <Link to={"/admins/create"}>
             <Button
               size="sm"
               className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-400 dark:hover:bg-blue-500"
@@ -48,10 +48,10 @@ function SuperAdminAdmins() {
               {isLoading
                 ? "Loading admins..."
                 : isError
-                ? "Failed to load admins"
-                : admins.length === 0
-                ? "No admins found"
-                : `Showing ${admins.length} admin${admins.length === 1 ? "" : "s"}`}
+                  ? "Failed to load admins"
+                  : admins.length === 0
+                    ? "No admins found"
+                    : `Showing ${admins.length} admin${admins.length === 1 ? "" : "s"}`}
             </TableCaption>
             <TableHeader className="bg-blue-100 dark:bg-gray-800">
               <TableRow>
@@ -75,19 +75,28 @@ function SuperAdminAdmins() {
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="px-6 py-6 text-base text-muted-foreground">
+                  <TableCell
+                    colSpan={5}
+                    className="px-6 py-6 text-base text-muted-foreground"
+                  >
                     Loading admins...
                   </TableCell>
                 </TableRow>
               ) : isError ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="px-6 py-6 text-base text-destructive">
+                  <TableCell
+                    colSpan={5}
+                    className="px-6 py-6 text-base text-destructive"
+                  >
                     {error?.message || "Failed to load admins."}
                   </TableCell>
                 </TableRow>
               ) : admins.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={5} className="px-6 py-6 text-base text-muted-foreground">
+                  <TableCell
+                    colSpan={5}
+                    className="px-6 py-6 text-base text-muted-foreground"
+                  >
                     No admins found.
                   </TableCell>
                 </TableRow>

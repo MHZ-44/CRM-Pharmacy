@@ -32,11 +32,11 @@ const router = createBrowserRouter([
         children: [
           { path: "", element: <SuperAdminHomePage /> },
           { path: "pharmacies", element: <SuperAdminPharmacies /> },
-          { path: "add-pharmacy", element: <SuperAdminAddPharmacy /> },
+          { path: "pharmacies/create", element: <SuperAdminAddPharmacy /> },
           { path: "warehouses", element: <SuperAdminWarehouses /> },
           { path: "warehouses/create", element: <SuperAdminAddWarehouse /> },
           { path: "admins", element: <SuperAdminAdmins /> },
-          { path: "add-admin", element: <SuperAdminAddAdmin /> },
+          { path: "admins/create", element: <SuperAdminAddAdmin /> },
         ],
       },
     ],

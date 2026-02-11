@@ -1,5 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { LOCATIONS } from "@/lib/locations";
+import { useCreateAdmin } from "@/hooks/superAdmin/useCreateAdmin";
 import {
   UserIcon,
   EnvelopeIcon,
@@ -15,6 +17,7 @@ import {
 export default function SuperAdminAddAdmin() {
   const [darkMode, setDarkMode] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
+  const { mutate: createAdmin, isPending } = useCreateAdmin();
 
   // Controlled inputs
   const [adminName, setAdminName] = useState("");
@@ -24,58 +27,31 @@ export default function SuperAdminAddAdmin() {
   const [showPassword, setShowPassword] = useState(false);
   const [adminLocation, setAdminLocation] = useState("");
 
-  // Locations from API
-  const [locations, setLocations] = useState([]);
-
-  useEffect(() => {
-    async function fetchLocations() {
-      try {
-        const res = await fetch("/api/locations"); // رابط الباك للمواقع
-        const data = await res.json();
-        setLocations(data.locations || []);
-      } catch (err) {
-        console.error("Failed to fetch locations:", err);
-      }
-    }
-    fetchLocations();
-  }, []);
-
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
     const formData = {
-      adminName,
-      adminPhone,
-      adminEmail,
+      name: adminName,
+      phone: adminPhone,
+      email: adminEmail,
       password,
-      adminLocation,
+      region_id: adminLocation,
     };
 
-    try {
-      const res = await fetch("/api/admins", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await res.json();
-      if (data.success) {
+    createAdmin(formData, {
+      onSuccess: () => {
         setShowNotification(true);
         setTimeout(() => setShowNotification(false), 3000);
-
-        // Reset form
         setAdminName("");
         setAdminPhone("");
         setAdminEmail("");
         setPassword("");
         setAdminLocation("");
-      } else {
+      },
+      onError: () => {
         alert("Failed to add admin!");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Error connecting to server!");
-    }
+      },
+    });
   };
 
   return (
@@ -87,7 +63,7 @@ export default function SuperAdminAddAdmin() {
       }`}
     >
       {/* Dark Mode Toggle */}
-    
+
       <button
         onClick={() => setDarkMode(!darkMode)}
         className={`absolute top-6 right-6 p-3 rounded-full shadow-lg transition ${
@@ -178,9 +154,9 @@ export default function SuperAdminAddAdmin() {
               `}
             >
               <option value="">Select Location</option>
-              {locations.map((loc) => (
-                <option key={loc.id} value={loc.name}>
-                  {loc.name}
+              {LOCATIONS.map((loc) => (
+                <option key={loc.value} value={loc.value}>
+                  {loc.label}
                 </option>
               ))}
             </select>
@@ -191,12 +167,13 @@ export default function SuperAdminAddAdmin() {
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             type="submit"
+            disabled={isPending}
             className="w-full py-3 rounded-xl font-semibold text-blue-100
               bg-gradient-to-r from-blue-500 to-blue-700
               hover:from-blue-700 hover:to-blue-800
-              shadow-lg"
+              shadow-lg disabled:cursor-not-allowed disabled:opacity-70"
           >
-            Add Admin
+            {isPending ? "Adding..." : "Add Admin"}
           </motion.button>
         </form>
       </motion.div>
