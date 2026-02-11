@@ -83,18 +83,11 @@ export default function AddAdmin() {
       className={`min-h-screen relative flex items-center justify-center px-4 transition-colors duration-500 ${
         darkMode
           ? "bg-gradient-to-br from-gray-900 via-slate-900 to-blue-950"
-          : "bg-gradient-to-br from-white via-slate-400 to blue-100"
+          : "bg-white"
       }`}
     >
       {/* Dark Mode Toggle */}
-      <button
-        onClick={() => setDarkMode(!darkMode)}
-        className={`absolute top-6 right-6 p-3 rounded-full shadow-lg transition ${
-          darkMode ? "bg-gray-800 text-yellow-400" : "bg-blue-100 text-blue-700"
-        }`}
-      >
-        {darkMode ? <SunIcon className="w-6 h-6" /> : <MoonIcon className="w-6 h-6" />}
-      </button>
+    
 
       {/* SINGLE CARD */}
       <motion.div

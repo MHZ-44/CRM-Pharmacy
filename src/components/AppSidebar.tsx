@@ -51,7 +51,13 @@ export function AppSidebar() {
   const sidebarItems = sidebarItemsByRole[role];
 
   return (
-    <Sidebar collapsible="icon" className="top-16 h-[calc(100svh-4rem)]">
+    <Sidebar
+      collapsible="icon"
+      className="top-16 h-[calc(100svh-4rem)]
+        bg-gradient-to-b from-white via-slate-200 to-blue-100
+        dark:from-gray-900 dark:via-slate-900 dark:to-blue-950
+        shadow-lg transition-colors duration-500"
+    >
       <SidebarContent>
         <SidebarMenu>
           {sidebarItems.map((item) => {
@@ -68,7 +74,11 @@ export function AppSidebar() {
                   asChild
                   size="lg"
                   isActive={isActive}
-                  className="text-base [&>svg]:size-5"
+                  className={`text-base [&>svg]:size-5
+                    ${isActive
+                      ? "bg-blue-200 dark:bg-blue-900 text-blue-800 dark:text-blue-300 font-semibold"
+                      : "text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-gray-800"}
+                  `}
                 >
                   <NavLink to={item.to}>
                     <Icon />
@@ -83,7 +93,12 @@ export function AppSidebar() {
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter>
-        <SidebarMenuButton asChild size="lg" className="text-base [&>svg]:size-5">
+        <SidebarMenuButton
+          asChild
+          size="lg"
+          className="text-base [&>svg]:size-5
+            text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-gray-800"
+        >
           <NavLink to="/settings">
             <MdOutlineSettings />
             <span className="group-data-[collapsible=icon]:hidden">

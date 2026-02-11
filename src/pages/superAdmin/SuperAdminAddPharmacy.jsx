@@ -91,18 +91,11 @@ export default function AddPharmacy() {
       className={`min-h-screen relative flex items-center justify-center px-4 transition-colors duration-500 ${
         darkMode
           ? "bg-gradient-to-br from-gray-900 via-slate-900 to-blue-950"
-          : "bg-gradient-to-br from-white via-slate-400 to blue-100"
+          : "bg-white"
       }`}
     >
       {/* Toggle Button */}
-      <button
-        onClick={() => setDarkMode(!darkMode)}
-        className={`absolute top-6 right-6 p-3 rounded-full shadow-lg transition ${
-          darkMode ? "bg-gray-800 text-yellow-400" : "bg-white text-blue-700"
-        }`}
-      >
-        {darkMode ? <SunIcon className="w-6 h-6" /> : <MoonIcon className="w-6 h-6" />}
-      </button>
+      
 
       {/* SINGLE CARD */}
       <motion.div
@@ -270,7 +263,8 @@ function PasswordInput({ icon: Icon, placeholder, darkMode, value, onChange, sho
         value={value}
         onChange={onChange}
         className={`w-full pl-10 pr-10 py-3 rounded-xl border focus:outline-none focus:ring-2 transition
-          ${darkMode ? "bg-gray-800 text-gray-100 border-gray-700 focus:ring-blue-500" : "bg-white text-gray-900 border-blue-300 focus:ring-blue-500"}
+          ${darkMode ? "bg-gray-800 text-gray-100 border-gray-700 focus:ring-blue-500" 
+            : "bg-white text-gray-900 border-blue-300 focus:ring-blue-500"}
         `}
       />
       {/* Eye icon */}
