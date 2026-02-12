@@ -68,7 +68,7 @@ export default function SuperAdminAddWarehouse() {
           : "bg-gradient-to-br from-white via-slate-400 to blue-100"
       }`}
     >
-      {/* Dark Mode Toggle */}
+      {/* Dark Mode Toggle 
       <button
         onClick={() => setDarkMode(!darkMode)}
         className={`absolute top-6 right-6 p-3 rounded-full shadow-lg transition ${
@@ -81,15 +81,17 @@ export default function SuperAdminAddWarehouse() {
           <MoonIcon className="w-6 h-6" />
         )}
       </button>
+      */}
 
       {/* SINGLE CARD */}
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className={`w-full max-w-4xl rounded-3xl p-10 shadow-[0_30px_50px_rgba(0,0,0,0.25)]
+        className={`w-full max-w-3xl rounded-3xl p-10 shadow-[0_30px_50px_rgba(0,0,0,0.25)]
           transition-colors duration-500
-          ${darkMode ? "bg-gray-900 text-gray-100" : "text-gray-900"}`}
+          ${darkMode ? "bg-gray-900 text-gray-100" 
+            : "text-gray-900"}`}
       >
         {/* Header */}
         <div className="text-center mb-10">

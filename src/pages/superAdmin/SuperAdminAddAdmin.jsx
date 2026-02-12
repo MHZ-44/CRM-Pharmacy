@@ -59,10 +59,11 @@ export default function SuperAdminAddAdmin() {
       className={`min-h-screen relative flex items-center justify-center px-4 transition-colors duration-500 ${
         darkMode
           ? "bg-gradient-to-br from-gray-900 via-slate-900 to-blue-950"
-          : "bg-white"
+          : "bg-gradient-to-br from-white via-slate-400 to blue-100"
+          
       }`}
     >
-      {/* Dark Mode Toggle */}
+      {/* Dark Mode Toggle 
 
       <button
         onClick={() => setDarkMode(!darkMode)}
@@ -75,14 +76,14 @@ export default function SuperAdminAddAdmin() {
         ) : (
           <MoonIcon className="w-6 h-6" />
         )}
-      </button>
+      </button> */}
 
       {/* SINGLE CARD */}
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
-        className={`w-full max-w-4xl rounded-3xl p-10 shadow-[0_30px_50px_rgba(0,0,0,0.25)]
+        className={`w-full max-w-3xl rounded-3xl p-10 shadow-[0_30px_50px_rgba(0,0,0,0.25)]
           transition-colors duration-500 
           
           ${darkMode ? "bg-gray-900 text-gray-100" : " text-gray-900"}`}
