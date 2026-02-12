@@ -7,6 +7,7 @@ import SuperAdminWarehouses from "./pages/superAdmin/SuperAdminWarehouses";
 import SuperAdminAddAdmin from "./pages/superAdmin/SuperAdminAddAdmin";
 import SuperAdminAddPharmacy from "./pages/superAdmin/SuperAdminAddPharmacy";
 import SuperAdminAddWarehouse from "./pages/superAdmin/SuperAdminAddWarehouse";
+import ProfilePage from "./pages/Profile";
 
 const router = createBrowserRouter([
   // {
@@ -37,6 +38,7 @@ const router = createBrowserRouter([
           { path: "warehouses/create", element: <SuperAdminAddWarehouse /> },
           { path: "admins", element: <SuperAdminAdmins /> },
           { path: "admins/create", element: <SuperAdminAddAdmin /> },
+          { path: "settings", element: <ProfilePage /> },
         ],
       },
     ],

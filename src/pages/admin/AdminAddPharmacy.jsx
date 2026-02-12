@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useCreatePharmacy } from "@/hooks/superAdmin/useCreatePharmacy";
 import {
   UserIcon,
   EnvelopeIcon,
@@ -16,9 +17,9 @@ import {
 export default function AdminAddPharmacy() {
   const [darkMode, setDarkMode] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
+  const { mutate: createPharmacy, isPending } = useCreatePharmacy();
 
   // Controlled inputs
-  const [adminName, setAdminName] = useState("");
   const [pharmacyName, setPharmacyName] = useState("");
   const [doctorName, setDoctorName] = useState("");
   const [doctorPhone, setDoctorPhone] = useState("");
@@ -48,42 +49,31 @@ export default function AdminAddPharmacy() {
     e.preventDefault();
 
     const formData = {
-      adminName,
-      pharmacyName,
-      doctorName,
-      doctorPhone,
-      doctorEmail,
+      pharmacy_name: pharmacyName,
+      doctor_name: doctorName,
+      doctor_phone: doctorPhone,
+      doctor_email: doctorEmail,
       password,
-      pharmacyLocation,
+      region_id: Number(pharmacyLocation),
     };
 
-    try {
-      const res = await fetch("/api/pharmacies", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      const data = await res.json();
-      if (data.success) {
+    createPharmacy(formData, {
+      onSuccess: () => {
         setShowNotification(true);
         setTimeout(() => setShowNotification(false), 3000);
 
         // مسح الفورم بعد الإرسال
-        setAdminName("");
         setPharmacyName("");
         setDoctorName("");
         setDoctorPhone("");
         setDoctorEmail("");
         setPassword("");
         setPharmacyLocation("");
-      } else {
+      },
+      onError: () => {
         alert("Failed to add pharmacy!");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Error connecting to server!");
-    }
+      },
+    });
   };
 
   return (
@@ -196,8 +186,8 @@ export default function AdminAddPharmacy() {
             >
               <option value="">Select Location</option>
               {locations.map((loc) => (
-                <option key={loc.id} value={loc.name}>
-                  {loc.name}
+                <option key={loc.id} value={loc.id}>
+                  {loc.name ?? loc.label}
                 </option>
               ))}
             </select>
@@ -208,12 +198,13 @@ export default function AdminAddPharmacy() {
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             type="submit"
+            disabled={isPending}
             className="w-full py-3 rounded-xl font-semibold text-blue-100
               bg-gradient-to-r from-blue-500 to-blue-700
               hover:from-blue-700 hover:to-blue-800
-              shadow-lg"
+              shadow-lg disabled:cursor-not-allowed disabled:opacity-70"
           >
-            Add Pharmacy
+            {isPending ? "Adding..." : "Add Pharmacy"}
           </motion.button>
         </form>
       </motion.div>

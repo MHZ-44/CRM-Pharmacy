@@ -53,6 +53,9 @@ export function AppSidebar() {
   const expandedByHoverRef = useRef(false);
   const role = getStoredRole() ?? DEFAULT_ROLE;
   const sidebarItems = sidebarItemsByRole[role];
+  const isSettingsActive =
+    location.pathname === "/settings" ||
+    location.pathname.startsWith("/settings/");
 
   return (
     <Sidebar
@@ -110,8 +113,12 @@ export function AppSidebar() {
         <SidebarMenuButton
           asChild
           size="lg"
-          className="text-base [&>svg]:size-5
-            text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-gray-800"
+          isActive={isSettingsActive}
+          className={`text-base [&>svg]:size-5
+            ${isSettingsActive
+              ? "bg-blue-200 dark:bg-blue-900 text-blue-800 dark:text-blue-300 font-semibold"
+              : "text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-gray-800"}
+          `}
         >
           <NavLink to="/settings">
             <MdOutlineSettings />
