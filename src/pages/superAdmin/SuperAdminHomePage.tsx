@@ -39,6 +39,16 @@ import { useGetCountWarehousesByRegion } from "@/hooks/superAdmin/useGetCountWar
 import { useGetCountAdminsByRegion } from "@/hooks/superAdmin/useGetCountAdminsByRegion";
 import { useGetCountPharmaciesByAdmin } from "@/hooks/superAdmin/useGetCountPharmaciesByAdmin";
 import { useGetCountWarehousesByAdmin } from "@/hooks/superAdmin/useGetCountWarehousesByAdmin";
+import { useGetAllFeedback } from "@/hooks/superAdmin/useGetAllFeedback";
+import { useGetOneFeedback } from "@/hooks/superAdmin/useGetOneFeedback";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 // الإحصائيات الرئيسية
 const statCards = [
@@ -77,6 +87,9 @@ function SuperAdminHomePage() {
   const [adminMetric, setAdminMetric] = useState<"pharmacies" | "warehouses">(
     "pharmacies",
   );
+  const [selectedFeedbackId, setSelectedFeedbackId] = useState<number | null>(
+    null,
+  );
 
   const { data: pharmaciesCount = 0 } = useGetCountPharmacies();
   const { data: warehousesCount = 0 } = useGetCountWarehouses();
@@ -86,6 +99,12 @@ function SuperAdminHomePage() {
   const { data: adminsByRegion } = useGetCountAdminsByRegion();
   const { data: pharmaciesByAdmin } = useGetCountPharmaciesByAdmin();
   const { data: warehousesByAdmin } = useGetCountWarehousesByAdmin();
+  const { data: feedbacks = [] } = useGetAllFeedback();
+  const {
+    data: selectedFeedback,
+    isLoading: isLoadingSelectedFeedback,
+    isError: isSelectedFeedbackError,
+  } = useGetOneFeedback(selectedFeedbackId);
   const locationStats = useMemo(
     () =>
       locationStatsBase.map((location) => {
@@ -138,6 +157,9 @@ function SuperAdminHomePage() {
   statCards[0].value = adminsCount;
   statCards[1].value = pharmaciesCount;
   statCards[2].value = warehousesCount;
+
+  const recentFeedbacks = feedbacks;
+  const isFeedbackDialogOpen = selectedFeedbackId !== null;
 
   return (
     <div
@@ -278,7 +300,122 @@ function SuperAdminHomePage() {
             <CardFooter className="hidden" />
           </Card>
         </div>
+
+        {/* Feedback */}
+        <Card className="bg-white dark:bg-gray-900 shadow-lg rounded-xl">
+          <CardHeader>
+            <CardTitle className="text-blue-800 dark:text-blue-300">
+              Latest Feedback
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {recentFeedbacks.length === 0 ? (
+              <div className="text-sm text-muted-foreground dark:text-gray-400">
+                No feedback yet.
+              </div>
+            ) : (
+              <div className="max-h-[30rem] overflow-y-auto pr-1">
+                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {recentFeedbacks.map((feedback) => (
+                  <button
+                    key={feedback.id}
+                    type="button"
+                    onClick={() => setSelectedFeedbackId(feedback.id)}
+                    className="text-left"
+                  >
+                    <Card className="bg-blue-50/60 dark:bg-gray-800 border border-blue-100/70 dark:border-gray-700 shadow-sm transition hover:shadow-md hover:border-blue-200 dark:hover:border-gray-600">
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="text-sm font-semibold text-blue-800 dark:text-blue-300">
+                            {feedback.sender_name}
+                          </div>
+                          <div className="text-xs text-muted-foreground dark:text-gray-400">
+                            {feedback.sender_type}
+                          </div>
+                        </div>
+                        <div className="mt-2 text-sm text-gray-700 dark:text-gray-200 line-clamp-1">
+                          {feedback.content}
+                        </div>
+                        <div className="mt-3 text-xs text-muted-foreground dark:text-gray-400">
+                          {new Date(feedback.created_at).toLocaleDateString()}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </button>
+                ))}
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
+
+      <Dialog
+        open={isFeedbackDialogOpen}
+        onOpenChange={(open) => {
+          if (!open) setSelectedFeedbackId(null);
+        }}
+      >
+        <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-hidden rounded-2xl border-blue-200/70 bg-white/95 p-0 shadow-2xl dark:border-gray-700 dark:bg-gray-900/95">
+          <DialogHeader>
+            <div className="border-b border-blue-100/70 px-6 py-5 dark:border-gray-800">
+              <DialogTitle className="text-left text-xl font-semibold text-blue-800 dark:text-blue-300">
+                Feedback Details
+              </DialogTitle>
+              <DialogDescription className="mt-1 text-left text-sm text-gray-600 dark:text-gray-400">
+                Full message and sender information.
+              </DialogDescription>
+            </div>
+            <div className="space-y-4 px-6 py-5 text-left max-h-[60vh] overflow-y-auto">
+                {isLoadingSelectedFeedback && (
+                  <p className="text-sm text-muted-foreground dark:text-gray-300">
+                    Loading feedback...
+                  </p>
+                )}
+
+                {isSelectedFeedbackError && (
+                  <p className="text-sm text-red-600 dark:text-red-400">
+                    Failed to load feedback details.
+                  </p>
+                )}
+
+                {!isLoadingSelectedFeedback &&
+                  !isSelectedFeedbackError &&
+                  selectedFeedback && (
+                    <>
+                      <div className="space-y-2 border-b border-blue-100 pb-3 dark:border-gray-800">
+                        <p className="text-sm text-gray-800 dark:text-gray-100">
+                          <span className="font-semibold text-blue-800 dark:text-blue-300">
+                            Sender:
+                          </span>{" "}
+                          {selectedFeedback.sender_name}
+                        </p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          <span className="font-semibold text-blue-800 dark:text-blue-300">
+                            Type:
+                          </span>{" "}
+                          {selectedFeedback.sender_type}
+                        </p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          <span className="font-semibold text-blue-800 dark:text-blue-300">
+                            Date:
+                          </span>{" "}
+                          {new Date(selectedFeedback.created_at).toLocaleString()}
+                        </p>
+                      </div>
+                      <p className="text-sm whitespace-pre-wrap break-words [overflow-wrap:anywhere] text-gray-800 dark:text-gray-100">
+                        {selectedFeedback.content}
+                      </p>
+                    </>
+                  )}
+            </div>
+          </DialogHeader>
+          <DialogFooter
+            showCloseButton
+            className="border-t border-blue-100/70 px-6 py-4 dark:border-gray-800"
+          />
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

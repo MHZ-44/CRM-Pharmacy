@@ -8,7 +8,7 @@ const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use((config) => {
-  const token = "2|V50AAQYjcOmSs7XX7NI9frOmA2GEBA0v4frA3xgO35ebb24d";
+  const token = "1|G1U9QrD0R7iQ2w7PQL0to7s8HgmenWOukW2AKDrB97d5f0eb";
   // getLsValue("token");
   if (token) {
     config.headers = config.headers ?? {};
