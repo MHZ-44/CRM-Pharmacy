@@ -3,7 +3,7 @@ export const ROLE_STORAGE_KEY = "app_role" as const;
 export const ROLES = [
   "superadmin",
   "admin",
-  "warehouses",
+  "warehouse",
   "pharmacies",
 ] as const;
 

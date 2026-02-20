@@ -22,28 +22,30 @@ type SidebarItem = {
   label: string;
   to: string;
   icon: React.ComponentType<{ className?: string }>;
-  match?: string;
 };
 
 const sidebarItemsByRole: Record<Role, SidebarItem[]> = {
   superadmin: [
-    { label: "Home Page", to: "/", match: "/", icon: FiHome },
+    { label: "Dashboard", to: "/home", icon: FiHome },
     { label: "Pharmacies", to: "/pharmacies", icon: MdOutlineLocalPharmacy },
     { label: "Warehouses", to: "/warehouses", icon: LuWarehouse },
     { label: "Admins", to: "/admins", icon: MdOutlinePeopleAlt },
   ],
+
   admin: [
-    { label: "Home Page", to: "/", match: "/", icon: FiHome },
+    { label: "Dashboard", to: "/home", icon: FiHome },
     { label: "Pharmacies", to: "/pharmacies", icon: MdOutlineLocalPharmacy },
     { label: "Warehouses", to: "/warehouses", icon: LuWarehouse },
   ],
-  warehouses: [
-    { label: "Home Page", to: "/", match: "/", icon: FiHome },
-    { label: "Warehouses", to: "/warehouses", icon: LuWarehouse },
+
+  warehouse: [
+    { label: "Dashboard", to: "/warehouse/home", icon: FiHome },
+    { label: "Inventory", to: "/warehouse/inventory", icon: LuWarehouse },
+    { label: "Orders", to: "/warehouse/orders", icon: MdOutlineLocalPharmacy },
   ],
+
   pharmacies: [
-    { label: "Home Page", to: "/", match: "/", icon: FiHome },
-    { label: "Pharmacies", to: "/pharmacies", icon: MdOutlineLocalPharmacy },
+    { label: "Dashboard", to: "/pharmacist/home", icon: FiHome },
   ],
 };
 
@@ -51,8 +53,10 @@ export function AppSidebar() {
   const location = useLocation();
   const { isMobile, open, setOpen } = useSidebar();
   const expandedByHoverRef = useRef(false);
+
   const role = getStoredRole() ?? DEFAULT_ROLE;
   const sidebarItems = sidebarItemsByRole[role];
+
   const isSettingsActive =
     location.pathname === "/settings" ||
     location.pathname.startsWith("/settings/");
@@ -72,17 +76,15 @@ export function AppSidebar() {
       }}
       className="top-16 h-[calc(100svh-4rem)]
         bg-gradient-to-b from-white via-slate-200 to-blue-100
-        dark:from-gray-900 dark:via-slate-900 dark:to-blue-950
         shadow-lg transition-colors duration-500"
     >
       <SidebarContent>
         <SidebarMenu>
           {sidebarItems.map((item) => {
-            const isActive = item.match
-              ? location.pathname === item.match ||
-                location.pathname.startsWith(item.match + "/")
-              : location.pathname === item.to ||
-                location.pathname.startsWith(item.to + "/");
+            const isActive =
+              location.pathname === item.to ||
+              location.pathname.startsWith(item.to + "/");
+
             const Icon = item.icon;
 
             return (
@@ -91,11 +93,11 @@ export function AppSidebar() {
                   asChild
                   size="lg"
                   isActive={isActive}
-                  className={`text-base [&>svg]:size-5
-                    ${isActive
-                      ? "bg-blue-200 dark:bg-blue-900 text-blue-800 dark:text-blue-300 font-semibold"
-                      : "text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-gray-800"}
-                  `}
+                  className={`text-base [&>svg]:size-5 ${
+                    isActive
+                      ? "bg-blue-200 text-blue-800 font-semibold"
+                      : "text-blue-700 hover:bg-blue-100"
+                  }`}
                 >
                   <NavLink to={item.to}>
                     <Icon />
@@ -109,17 +111,9 @@ export function AppSidebar() {
           })}
         </SidebarMenu>
       </SidebarContent>
+
       <SidebarFooter>
-        <SidebarMenuButton
-          asChild
-          size="lg"
-          isActive={isSettingsActive}
-          className={`text-base [&>svg]:size-5
-            ${isSettingsActive
-              ? "bg-blue-200 dark:bg-blue-900 text-blue-800 dark:text-blue-300 font-semibold"
-              : "text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-gray-800"}
-          `}
-        >
+        <SidebarMenuButton asChild size="lg" isActive={isSettingsActive}>
           <NavLink to="/settings">
             <MdOutlineSettings />
             <span className="group-data-[collapsible=icon]:hidden">
