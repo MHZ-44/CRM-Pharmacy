@@ -1,7 +1,10 @@
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { LOCATIONS } from "@/lib/locations";
 import { useCreateAdmin } from "@/hooks/superAdmin/useCreateAdmin";
+import { toast } from "sonner";
+import { getApiErrorMessage } from "@/lib/getApiErrorMessage";
+import { useNavigate } from "react-router-dom";
 import {
   UserIcon,
   EnvelopeIcon,
@@ -13,8 +16,8 @@ import {
 } from "@heroicons/react/24/outline";
 
 export default function SuperAdminAddAdmin() {
-  const [showNotification, setShowNotification] = useState(false);
   const { mutate: createAdmin, isPending } = useCreateAdmin();
+  const navigate = useNavigate();
 
   // Controlled inputs
   const [adminName, setAdminName] = useState("");
@@ -37,16 +40,16 @@ export default function SuperAdminAddAdmin() {
 
     createAdmin(formData, {
       onSuccess: () => {
-        setShowNotification(true);
-        setTimeout(() => setShowNotification(false), 3000);
+        toast.success("Admin added successfully.");
         setAdminName("");
         setAdminPhone("");
         setAdminEmail("");
         setPassword("");
         setAdminLocation("");
+        navigate("/admins");
       },
-      onError: () => {
-        alert("Failed to add admin!");
+      onError: (error) => {
+        toast.error(getApiErrorMessage(error, "Failed to add admin."));
       },
     });
   };
@@ -144,20 +147,6 @@ export default function SuperAdminAddAdmin() {
         </form>
       </motion.div>
 
-      {/* Notification */}
-      <AnimatePresence>
-        {showNotification && (
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 50 }}
-            transition={{ duration: 0.5 }}
-            className="fixed bottom-10 right-10 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg font-semibold"
-          >
-            Admin added successfully!
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

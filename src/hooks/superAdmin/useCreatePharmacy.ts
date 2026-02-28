@@ -2,7 +2,7 @@ import { post } from "@/api/mutator";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 
-export type CreatePharmacyPayload = {
+type CreatePharmacyPayload = {
   pharmacy_name: string;
   doctor_name: string;
   doctor_phone: string;

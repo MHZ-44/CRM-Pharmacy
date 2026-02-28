@@ -16,18 +16,30 @@ function AdminWarehouses() {
   const warehouses = data ?? [];
 
   return (
-    <div className="min-h-full w-full bg-muted/30">
+    <div
+      className="min-h-full w-full 
+        bg-gradient-to-br from-white via-slate-200 to-blue-100
+        dark:from-gray-900 dark:via-slate-900 dark:to-blue-950
+        transition-colors duration-500"
+    >
       <div className="flex w-full flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <h1 className="text-3xl font-semibold tracking-tight">Warehouses</h1>
+          <h1 className="text-3xl font-semibold tracking-tight text-blue-800 dark:text-blue-300">
+            Warehouses
+          </h1>
           <Link to={"create"}>
-            <Button size="sm">Add Warehouse</Button>
+            <Button
+              size="sm"
+              className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-400 dark:hover:bg-blue-500"
+            >
+              Add Warehouse
+            </Button>
           </Link>
         </div>
 
-        <div className="w-full rounded-lg border bg-card shadow-sm">
+        <div className="w-full rounded-lg border bg-white dark:bg-gray-900 shadow-lg">
           <Table className="min-w-[1100px] text-base">
-            <TableCaption className="px-4 pb-4 text-left">
+            <TableCaption className="px-4 pb-4 text-left text-blue-700 dark:text-blue-300">
               {isLoading
                 ? "Loading warehouses..."
                 : isError
@@ -36,21 +48,27 @@ function AdminWarehouses() {
                     ? "No warehouses found"
                     : `Showing ${warehouses.length} warehouse${warehouses.length === 1 ? "" : "s"}`}
             </TableCaption>
-            <TableHeader className="bg-muted/40">
+            <TableHeader className="bg-blue-100 dark:bg-gray-800">
               <TableRow className="hover:bg-transparent data-[state=selected]:bg-transparent">
-                <TableHead className="w-[240px] px-6 py-4 text-base">
+                <TableHead className="w-[240px] px-6 py-4 text-base text-blue-800 dark:text-blue-300">
                   Warehouse Name
                 </TableHead>
-                <TableHead className="px-6 py-4 text-base">
+                <TableHead className="px-6 py-4 text-base text-blue-800 dark:text-blue-300">
                   Owner Name
                 </TableHead>
-                <TableHead className="px-6 py-4 text-base">Email</TableHead>
-                <TableHead className="px-6 py-4 text-base">Number</TableHead>
-                <TableHead className="px-6 py-4 text-base">Location</TableHead>
-                <TableHead className="px-6 py-4 text-base">
+                <TableHead className="px-6 py-4 text-base text-blue-800 dark:text-blue-300">
+                  Email
+                </TableHead>
+                <TableHead className="px-6 py-4 text-base text-blue-800 dark:text-blue-300">
+                  Number
+                </TableHead>
+                <TableHead className="px-6 py-4 text-base text-blue-800 dark:text-blue-300">
+                  Location
+                </TableHead>
+                <TableHead className="px-6 py-4 text-base text-blue-800 dark:text-blue-300">
                   Admin Add it
                 </TableHead>
-                <TableHead className="px-6 py-4 text-right text-base">
+                <TableHead className="px-6 py-4 text-right text-base text-blue-800 dark:text-blue-300">
                   Added Date
                 </TableHead>
               </TableRow>

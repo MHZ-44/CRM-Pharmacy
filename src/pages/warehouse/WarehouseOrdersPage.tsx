@@ -66,10 +66,15 @@ export default function WarehouseOrders() {
   };
 
   return (
-    <div className="p-6 space-y-6">
-      <h1 className="text-2xl font-bold text-blue-800 dark:text-blue-300">
-        Warehouse Orders
-      </h1>
+    <div className="min-h-screen p-8 space-y-8 bg-gradient-to-br from-white via-slate-100 to-blue-50 text-slate-900 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 dark:text-slate-100">
+      <div>
+        <h1 className="text-3xl font-bold text-blue-800 dark:text-blue-200">
+          Warehouse Orders
+        </h1>
+        <p className="text-blue-600 text-sm mt-1 dark:text-blue-300">
+          Review and send pending pharmacy orders
+        </p>
+      </div>
 
       <div className="space-y-6">
         {orders.map((order) => {
@@ -78,10 +83,10 @@ export default function WarehouseOrders() {
           return (
             <div
               key={order.id}
-              className="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] space-y-4 cursor-pointer"
+              className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] space-y-4 cursor-pointer dark:bg-slate-900 dark:border-slate-800 dark:shadow-none"
             >
               <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold text-blue-700">
+                <h2 className="text-lg font-semibold text-blue-700 dark:text-blue-200">
                   {order.pharmacyName}
                 </h2>
 
@@ -100,7 +105,7 @@ export default function WarehouseOrders() {
 
               {/* Items Table */}
               <table className="w-full border-collapse">
-                <thead className="bg-blue-100 dark:bg-gray-800">
+                <thead className="bg-blue-100 dark:bg-slate-800">
                   <tr>
                     <th className="p-3 text-left">✓</th>
                     <th className="p-3 text-left">Medicine</th>
@@ -112,7 +117,7 @@ export default function WarehouseOrders() {
                   {order.items.map((item) => (
                     <tr
                       key={item.id}
-                      className="border-b hover:bg-blue-50 dark:hover:bg-gray-800"
+                      className="border-b border-slate-200 hover:bg-blue-50 dark:border-slate-800 dark:hover:bg-slate-800/70"
                     >
                       <td className="p-3">
                         <input

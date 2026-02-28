@@ -8,7 +8,12 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { DEFAULT_ROLE, type Role, getStoredRole } from "@/lib/roles";
+import {
+  DEFAULT_ROLE,
+  type Role,
+  getRoleFromAuthToken,
+  getStoredRole,
+} from "@/lib/roles";
 import { FiHome } from "react-icons/fi";
 import { LuWarehouse } from "react-icons/lu";
 import {
@@ -54,7 +59,7 @@ export function AppSidebar() {
   const { isMobile, open, setOpen } = useSidebar();
   const expandedByHoverRef = useRef(false);
 
-  const role = getStoredRole() ?? DEFAULT_ROLE;
+  const role = getRoleFromAuthToken() ?? getStoredRole() ?? DEFAULT_ROLE;
   const sidebarItems = sidebarItemsByRole[role];
 
   const isSettingsActive =

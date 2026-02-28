@@ -1,6 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
 import { AppLayout } from "./components/AppLayout";
-
 import SuperAdminAdmins from "./pages/superAdmin/SuperAdminAdmins";
 import SuperAdminHomePage from "./pages/superAdmin/SuperAdminHomePage";
 import SuperAdminPharmacies from "./pages/superAdmin/SuperAdminPharmacies";
@@ -9,35 +8,27 @@ import SuperAdminAddAdmin from "./pages/superAdmin/SuperAdminAddAdmin";
 import SuperAdminAddPharmacy from "./pages/superAdmin/SuperAdminAddPharmacy";
 import SuperAdminAddWarehouse from "./pages/superAdmin/SuperAdminAddWarehouse";
 import ProfilePage from "./pages/Profile";
-import LoginPage from "./pages/auth/LoginPage";
-import WarehouseHomePage from "./pages/warehouse/WarehouseHomePage";
-import WarehouseInventoryPage from "./pages/warehouse/WarehouseInventoryPage";
-import WarehouseOrdersPage from "./pages/warehouse/WarehouseOrdersPage";
+import AdminAddPharmacy from "./pages/admin/AdminAddPharmacy";
+import AdminAddWarehouse from "./pages/admin/AdminAddWarehouse";
+import AdminPharmacies from "./pages/admin/AdminPharmacies";
+import AdminWarehouses from "./pages/admin/AdminWarehouses";
+import { RequireRole, RoleHomeRedirect } from "./lib/route-guards";
+import PharmacyMedicine from "./pages/pharmacy/PharmacyMedicine";
+import PharmacyLowStockMedicine from "./pages/pharmacy/PharmacyLowStockMedicine";
+import PharmacyOutOfStockMedicine from "./pages/pharmacy/PharmacyOutOfStockMedicine";
+import PharmacyAddMedicine from "./pages/pharmacy/PharmacyAddMedicine";
 
 const router = createBrowserRouter([
-  
-    //element: <AuthLayout />,
-   
-    { path: "/", element: <LoginPage /> },
-  //     { path: "/register", element: <Signup /> },
-  //     { path: "/forgot-password", element: <ResetPassword /> },
-  //     { path: "/verify-email/success", element: <VerifyEmailSuccess /> },
-  //   ],
-  
-
   {
-    // element: <RequireAuth />,
-    // children: [
-    //   {
-    
+    path: "/",
     element: <AppLayout />,
     children: [
-      // { path: "/profile", element: <ProfilePage /> },
+      // { index: true, element: <RoleHomeRedirect /> },
+      { path: "settings", element: <ProfilePage /> },
 
       {
-        // element: <RequireRole allowed={["superAdmin"]} />,
+        // element: <RequireRole allowed={["superadmin"]} />,
         children: [
-          
           { path: "home", element: <SuperAdminHomePage /> },
           { path: "pharmacies", element: <SuperAdminPharmacies /> },
           { path: "pharmacies/create", element: <SuperAdminAddPharmacy /> },
@@ -45,15 +36,47 @@ const router = createBrowserRouter([
           { path: "warehouses/create", element: <SuperAdminAddWarehouse /> },
           { path: "admins", element: <SuperAdminAdmins /> },
           { path: "admins/create", element: <SuperAdminAddAdmin /> },
-          { path: "settings", element: <ProfilePage /> },
-          { path: "warehouse/home", element: <WarehouseHomePage />,},
-          { path: "warehouse/inventory", element: <WarehouseInventoryPage /> },
-          { path: "warehouse/orders", element: <WarehouseOrdersPage /> },
         ],
       },
+
+      // {
+      //   element: <RequireRole allowed={["admin"]} />,
+      //   children: [
+      //     { path: "home", element: <SuperAdminHomePage /> },
+      //     { path: "pharmacies", element: <AdminPharmacies /> },
+      //     { path: "pharmacies/create", element: <AdminAddPharmacy /> },
+      //     { path: "warehouses", element: <AdminWarehouses /> },
+      //     { path: "warehouses/create", element: <AdminAddWarehouse /> },
+      //   ],
+      // },
+
+      // {
+      //   element: <RequireRole allowed={["warehouse"]} />,
+      //   children: [
+      //     { path: "warehouse/home", element: <WarehouseHomePage /> },
+      //     { path: "warehouse/inventory", element: <WarehouseInventoryPage /> },
+      //     { path: "warehouse/orders", element: <WarehouseOrdersPage /> },
+      //   ],
+      // },
+
+      // {
+      //   // element: <RequireRole allowed={["pharmacies"]} />,
+      //   children: [
+      //     { path: "", element: <PharmacyMedicine /> },
+      //     { path: "pharmacy/low-stock", element: <PharmacyLowStockMedicine /> },
+      //     {
+      //       path: "pharmacy/out-of-stock",
+      //       element: <PharmacyOutOfStockMedicine />,
+      //     },
+      //     {
+      //       path: "/pharmacy/medicines/create",
+      //       element: <PharmacyAddMedicine />,
+      //     },
+      //   ],
+      // },
+
+      { path: "*", element: <RoleHomeRedirect /> },
     ],
-    //   },
-    // ],
   },
 ]);
 

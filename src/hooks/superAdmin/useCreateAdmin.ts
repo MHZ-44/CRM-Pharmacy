@@ -2,7 +2,7 @@ import { post } from "@/api/mutator";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 
-export type CreateAdminPayload = {
+type CreateAdminPayload = {
   name: string;
   phone: string;
   email: string;
