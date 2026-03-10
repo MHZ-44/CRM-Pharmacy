@@ -51,35 +51,7 @@ export default function WarehouseInventory() {
           </p>
         </div>
 
-        <div className="flex gap-4">
-
-          {/* Low Stock */}
-          <div
-            onClick={() => setActiveModal("low")}
-            className="bg-yellow-100 border border-yellow-300 px-5 py-4 rounded-2xl shadow-md hover:shadow-xl hover:scale-105 transition cursor-pointer text-center dark:bg-yellow-500/10 dark:border-yellow-500/30 dark:shadow-none"
-          >
-            <p className="text-yellow-700 font-semibold text-sm dark:text-yellow-300">
-              🟡 Low Stock
-            </p>
-            <p className="text-lg font-bold text-yellow-700 dark:text-yellow-300">
-              {lowStockProducts.length}
-            </p>
-          </div>
-
-          {/* Out Of Stock */}
-          <div
-            onClick={() => setActiveModal("out")}
-            className="bg-red-100 border border-red-300 px-5 py-4 rounded-2xl shadow-md hover:shadow-xl hover:scale-105 transition cursor-pointer text-center dark:bg-red-500/10 dark:border-red-500/30 dark:shadow-none"
-          >
-            <p className="text-red-700 font-semibold text-sm dark:text-red-300">
-              🔴 Out of Stock
-            </p>
-            <p className="text-lg font-bold text-red-700 dark:text-red-300">
-              {outOfStockProducts.length}
-            </p>
-          </div>
-
-        </div>
+        
       </div>
 
       {/* Search */}

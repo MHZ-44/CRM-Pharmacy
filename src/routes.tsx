@@ -17,7 +17,9 @@ import PharmacyMedicine from "./pages/pharmacy/PharmacyMedicine";
 import PharmacyLowStockMedicine from "./pages/pharmacy/PharmacyLowStockMedicine";
 import PharmacyOutOfStockMedicine from "./pages/pharmacy/PharmacyOutOfStockMedicine";
 import PharmacyAddMedicine from "./pages/pharmacy/PharmacyAddMedicine";
-
+import WarehouseInventory from "./pages/warehouse/WarehouseInventoryPage";
+import WarehouseOutOfStockMedicine from "./pages/warehouse/WarehouseOutOfStockMedicine";
+import WarehouseLowStockMedicine from "./pages/warehouse/WarehouseLowStockMedicine";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -36,6 +38,17 @@ const router = createBrowserRouter([
           { path: "warehouses/create", element: <SuperAdminAddWarehouse /> },
           { path: "admins", element: <SuperAdminAdmins /> },
           { path: "admins/create", element: <SuperAdminAddAdmin /> },
+          { path: "pharmacy/addmedicine",element:<PharmacyAddMedicine/>},
+          { path: "pharmacy/low",element:<PharmacyLowStockMedicine/>},
+          { path: "pharmacy/medicine",element:<PharmacyMedicine/>},
+          { path: "pharmacy/out",element:<PharmacyOutOfStockMedicine/>},
+          { path: "warehouse/inventory",element:<WarehouseInventory/>},
+          { path: "warehouse/out",element:<WarehouseOutOfStockMedicine />},
+          { path: "warehouse/low",element:<WarehouseLowStockMedicine />},
+
+
+
+
         ],
       },
 
