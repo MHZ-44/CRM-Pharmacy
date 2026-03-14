@@ -80,7 +80,6 @@ export default function WarehouseInventory() {
   });
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [activeModal, setActiveModal] = useState<"low" | "out" | null>(null);
 
   const filteredProducts = products.filter((product) =>
     product.name.toLowerCase().includes(searchTerm.toLowerCase()),
@@ -115,34 +114,28 @@ export default function WarehouseInventory() {
         </Link>
       </div>
 
-      {/* Stock Cards */}
+      {/* STOCK CARDS */}
+      <div className="grid grid-cols-2 gap-6">
+        <Link to="/warehouse/low">
+          <div className="cursor-pointer bg-yellow-100 hover:bg-yellow-200 transition p-6 rounded-2xl shadow-md">
+            <h2 className="text-xl font-bold text-yellow-700">Low Stock</h2>
+            <p className="text-3xl font-bold mt-2">{lowStockProducts.length}</p>
+            <p className="text-sm text-yellow-700">Medicines below 10 items</p>
+          </div>
+        </Link>
 
-      <div className="flex gap-6">
-        <div
-          onClick={() => setActiveModal("low")}
-          className="cursor-pointer bg-yellow-100 hover:bg-yellow-200 transition p-6 rounded-2xl shadow-md"
-        >
-          <h2 className="text-xl font-bold text-yellow-700">Low Stock</h2>
-
-          <p className="text-3xl font-bold mt-2">{lowStockProducts.length}</p>
-
-          <p className="text-sm text-yellow-700">Medicines below 10 items</p>
-        </div>
-
-        <div
-          onClick={() => setActiveModal("out")}
-          className="cursor-pointer bg-red-100 hover:bg-red-200 transition p-6 rounded-2xl shadow-md"
-        >
-          <h2 className="text-xl font-bold text-red-700">Out of Stock</h2>
-
-          <p className="text-3xl font-bold mt-2">{outOfStockProducts.length}</p>
-
-          <p className="text-sm text-red-700">Medicines finished</p>
-        </div>
+        <Link to="/warehouse/out">
+          <div className="cursor-pointer bg-red-100 hover:bg-red-200 transition p-6 rounded-2xl shadow-md">
+            <h2 className="text-xl font-bold text-red-700">Out of Stock</h2>
+            <p className="text-3xl font-bold mt-2">
+              {outOfStockProducts.length}
+            </p>
+            <p className="text-sm text-red-700">Medicines finished</p>
+          </div>
+        </Link>
       </div>
 
       {/* Search */}
-
       <div className="relative w-full">
         <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-xl" />
 
@@ -156,7 +149,6 @@ export default function WarehouseInventory() {
       </div>
 
       {/* Table */}
-
       <div className="overflow-x-auto rounded-2xl shadow-xl border bg-white">
         <table className="w-full border-collapse">
           <thead className="bg-blue-100 text-lg">
@@ -179,80 +171,16 @@ export default function WarehouseInventory() {
                 } hover:bg-blue-50 transition`}
               >
                 <td className="p-4 font-semibold">{product.name}</td>
-
                 <td className="p-4">{product.strength || "—"}</td>
-
                 <td className="p-4 font-semibold">{product.quantity}</td>
-
                 <td className="p-4">{product.company}</td>
-
                 <td className="p-4">{product.price}</td>
-
                 <td className="p-4">{product.expiryDate}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-
-      {/* Modal */}
-
-      {activeModal && (
-        <div className="fixed inset-0 backdrop-blur-sm bg-black/20 flex items-center justify-center">
-          <div className="bg-white p-8 rounded-3xl shadow-2xl w-[900px] max-h-[80vh] overflow-auto space-y-6">
-            <h2
-              className={`text-2xl font-bold ${
-                activeModal === "low" ? "text-yellow-600" : "text-red-600"
-              }`}
-            >
-              {activeModal === "low"
-                ? "Low Stock Medicines"
-                : "Out of Stock Medicines"}
-            </h2>
-
-            <table className="w-full border-collapse">
-              <thead className="bg-blue-100 text-lg">
-                <tr>
-                  <th className="p-4 text-left">Name</th>
-                  <th className="p-4 text-left">Strength</th>
-                  <th className="p-4 text-left">Quantity</th>
-                  <th className="p-4 text-left">Company</th>
-                  <th className="p-4 text-left">Price ($)</th>
-                  <th className="p-4 text-left">Expiry</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {(activeModal === "low"
-                  ? lowStockProducts
-                  : outOfStockProducts
-                ).map((product) => (
-                  <tr key={product.id} className="border-b">
-                    <td className="p-4 font-semibold">{product.name}</td>
-
-                    <td className="p-4">{product.strength || "—"}</td>
-
-                    <td className="p-4 font-bold">{product.quantity}</td>
-
-                    <td className="p-4">{product.company}</td>
-
-                    <td className="p-4">{product.price}</td>
-
-                    <td className="p-4">{product.expiryDate}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-
-            <Button
-              onClick={() => setActiveModal(null)}
-              className="w-full bg-gray-600 hover:bg-gray-700 text-white"
-            >
-              Close
-            </Button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
