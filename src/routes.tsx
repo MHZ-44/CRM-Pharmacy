@@ -17,6 +17,10 @@ import PharmacyMedicine from "./pages/pharmacy/PharmacyMedicine";
 import PharmacyLowStockMedicine from "./pages/pharmacy/PharmacyLowStockMedicine";
 import PharmacyOutOfStockMedicine from "./pages/pharmacy/PharmacyOutOfStockMedicine";
 import PharmacyAddMedicine from "./pages/pharmacy/PharmacyAddMedicine";
+import PharmacyShowWarehouses from "./pages/pharmacy/PharmacyShowWarehouses";
+import PharmacyWarehouseMedicines from "./pages/pharmacy/PharmacyWarehouseMedicines";
+import PharmacyCart from "./pages/pharmacy/PharmacyCart";
+import PharmacySales from "./pages/pharmacy/PharmacySales";
 
 const router = createBrowserRouter([
   {
@@ -24,20 +28,20 @@ const router = createBrowserRouter([
     element: <AppLayout />,
     children: [
       // { index: true, element: <RoleHomeRedirect /> },
-      { path: "settings", element: <ProfilePage /> },
+      // { path: "settings", element: <ProfilePage /> },
 
-      {
-        // element: <RequireRole allowed={["superadmin"]} />,
-        children: [
-          { path: "home", element: <SuperAdminHomePage /> },
-          { path: "pharmacies", element: <SuperAdminPharmacies /> },
-          { path: "pharmacies/create", element: <SuperAdminAddPharmacy /> },
-          { path: "warehouses", element: <SuperAdminWarehouses /> },
-          { path: "warehouses/create", element: <SuperAdminAddWarehouse /> },
-          { path: "admins", element: <SuperAdminAdmins /> },
-          { path: "admins/create", element: <SuperAdminAddAdmin /> },
-        ],
-      },
+      // {
+      // element: <RequireRole allowed={["superadmin"]} />,
+      //   children: [
+      //     { path: "home", element: <SuperAdminHomePage /> },
+      //     { path: "pharmacies", element: <SuperAdminPharmacies /> },
+      //     { path: "pharmacies/create", element: <SuperAdminAddPharmacy /> },
+      //     { path: "warehouses", element: <SuperAdminWarehouses /> },
+      //     { path: "warehouses/create", element: <SuperAdminAddWarehouse /> },
+      //     { path: "admins", element: <SuperAdminAdmins /> },
+      //     { path: "admins/create", element: <SuperAdminAddAdmin /> },
+      //   ],
+      // },
 
       // {
       //   element: <RequireRole allowed={["admin"]} />,
@@ -59,21 +63,33 @@ const router = createBrowserRouter([
       //   ],
       // },
 
-      // {
-      //   // element: <RequireRole allowed={["pharmacies"]} />,
-      //   children: [
-      //     { path: "", element: <PharmacyMedicine /> },
-      //     { path: "pharmacy/low-stock", element: <PharmacyLowStockMedicine /> },
-      //     {
-      //       path: "pharmacy/out-of-stock",
-      //       element: <PharmacyOutOfStockMedicine />,
-      //     },
-      //     {
-      //       path: "/pharmacy/medicines/create",
-      //       element: <PharmacyAddMedicine />,
-      //     },
-      //   ],
-      // },
+      {
+        element: <RequireRole allowed={["pharmacies"]} />,
+        children: [
+          { path: "", element: <PharmacyMedicine /> },
+          { path: "pharmacy/low-stock", element: <PharmacyLowStockMedicine /> },
+          {
+            path: "pharmacy/out-of-stock",
+            element: <PharmacyOutOfStockMedicine />,
+          },
+          {
+            path: "/pharmacy/medicines/create",
+            element: <PharmacyAddMedicine />,
+          },
+          {
+            path: "/pharmacy/warehouses",
+            element: <PharmacyShowWarehouses />,
+          },
+          {
+            path: "/pharmacy/warehouses/:warehouseId/medicines",
+            element: <PharmacyWarehouseMedicines />,
+          },
+          {
+            path: "/pharmacy/cart",
+            element: <PharmacySales />,
+          },
+        ],
+      },
 
       { path: "*", element: <RoleHomeRedirect /> },
     ],

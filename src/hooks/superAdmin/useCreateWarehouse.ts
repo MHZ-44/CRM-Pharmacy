@@ -1,15 +1,7 @@
 import { post } from "@/api/mutator";
+import type { Warehouse } from "@/entities/Warehouse";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
-
-type CreateWarehousePayload = {
-  warehouse_name: string;
-  owner_name: string;
-  owner_phone: string;
-  owner_email: string;
-  password: string;
-  region_id: number;
-};
 
 export const useCreateWarehouse = () => {
   const queryClient = useQueryClient();
@@ -17,9 +9,9 @@ export const useCreateWarehouse = () => {
   const mutation = useMutation<
     { data: string },
     AxiosError<{ error: string }>,
-    CreateWarehousePayload
+    Warehouse & { password: string }
   >({
-    mutationFn: (data: CreateWarehousePayload) =>
+    mutationFn: (data: Warehouse & { password: string }) =>
       post(`/api/warehouses`, data, {
         headers: {
           "Content-Type": "application/json",

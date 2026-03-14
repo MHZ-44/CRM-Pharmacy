@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { Navigate, Outlet } from "react-router-dom";
 import {
   DEFAULT_ROLE,

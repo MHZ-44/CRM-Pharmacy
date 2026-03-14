@@ -50,19 +50,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-// الإحصائيات الرئيسية
-const statCards = [
-  { title: "Total Admins", value: 0 },
-  { title: "Total Pharmacies", value: 0 },
-  { title: "Total Warehouses", value: 0 },
-];
-
-// إحصائيات كل موقع
 const locationStatsBase = LOCATIONS.map((location) => ({
   location: location.label,
 }));
 
-// ألوان المخططات
 const chartColors = [
   "color-mix(in oklch, oklch(0.80 0.14 215) 80%, white)", // أزرق
   "color-mix(in oklch, oklch(0.76 0.13 240) 80%, white)", // سماوي
@@ -72,7 +63,6 @@ const chartColors = [
   "color-mix(in oklch, oklch(0.84 0.11 165) 80%, white)", // أخضر أزرق
 ];
 
-// تكوين المخططات
 const chartConfig = {
   value: { label: "Count" },
   admins: { label: "Admins", color: "var(--chart-1)" },
@@ -154,9 +144,14 @@ function SuperAdminHomePage() {
       ? "Warehouses Per Admin"
       : "Pharmacies Per Admin";
 
-  statCards[0].value = adminsCount;
-  statCards[1].value = pharmaciesCount;
-  statCards[2].value = warehousesCount;
+  const statCards = useMemo(
+    () => [
+      { title: "Total Admins", value: adminsCount },
+      { title: "Total Pharmacies", value: pharmaciesCount },
+      { title: "Total Warehouses", value: warehousesCount },
+    ],
+    [adminsCount, pharmaciesCount, warehousesCount],
+  );
 
   const recentFeedbacks = feedbacks;
   const isFeedbackDialogOpen = selectedFeedbackId !== null;
@@ -169,12 +164,10 @@ function SuperAdminHomePage() {
       transition-colors duration-500"
     >
       <div className="flex flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-        {/* العنوان */}
         <h1 className="text-4xl font-semibold tracking-tight text-blue-800 dark:text-blue-300">
           Dashboard
         </h1>
 
-        {/* كروت الإحصائيات */}
         <div className="grid gap-4 md:grid-cols-3">
           {statCards.map((card) => (
             <Card
@@ -193,9 +186,7 @@ function SuperAdminHomePage() {
           ))}
         </div>
 
-        {/* المخططات */}
         <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr]">
-          {/* مخطط المواقع */}
           <Card className="flex flex-col bg-white dark:bg-gray-900 shadow-lg rounded-xl">
             <CardHeader className="flex flex-row items-center justify-between gap-4 pb-0">
               <CardTitle className="text-blue-800 dark:text-blue-300">
@@ -233,7 +224,6 @@ function SuperAdminHomePage() {
             <CardFooter className="hidden" />
           </Card>
 
-          {/* مخطط البيانات لكل مسؤول */}
           <Card className="bg-white dark:bg-gray-900 shadow-lg rounded-xl">
             <CardHeader className="flex flex-row items-center justify-between gap-4 pb-0">
               <CardTitle className="text-blue-800 dark:text-blue-300">

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { BarcodeFormat } from "@zxing/browser";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -24,44 +24,45 @@ function PharmacyAddMedicine() {
   const [barcode, setBarcode] = useState("");
   const { mutate: createMedicine, isPending } = useCreateMedicine();
   const navigate = useNavigate();
-  const { data: medicineByBarcode, isSuccess } = useGetOneMedicine(barcode);
+  const { data: medicineByBarcode } = useGetOneMedicine(barcode);
   const isExisting = Boolean(medicineByBarcode);
 
-  const [name, setName] = useState("");
-  const [strength, setStrength] = useState("");
-  const [companyName, setCompanyName] = useState("");
-  const [form, setForm] = useState("");
+  const [draft, setDraft] = useState({
+    name: "",
+    strength: "",
+    companyName: "",
+    form: "",
+  });
   const [costPrice, setCostPrice] = useState("");
   const [quantity, setQuantity] = useState("");
 
-  useEffect(() => {
-    if (!barcode.trim()) {
-      setName("");
-      setStrength("");
-      setCompanyName("");
-      setForm("");
-      return;
-    }
-
-    if (medicineByBarcode) {
-      setName(medicineByBarcode.name);
-      setStrength(medicineByBarcode.strength);
-      setCompanyName(medicineByBarcode.company_name);
-      setForm(medicineByBarcode.form);
-      return;
-    }
-
-    if (isSuccess) {
-      setName("");
-      setStrength("");
-      setCompanyName("");
-      setForm("");
-    }
-  }, [barcode, isSuccess, medicineByBarcode]);
+  const displayName = isExisting ? medicineByBarcode?.name ?? "" : draft.name;
+  const displayStrength = isExisting
+    ? medicineByBarcode?.strength ?? ""
+    : draft.strength;
+  const displayCompanyName = isExisting
+    ? medicineByBarcode?.company_name ?? ""
+    : draft.companyName;
+  const displayForm = isExisting ? medicineByBarcode?.form ?? "" : draft.form;
 
   const handleScan = (value: string) => {
     setBarcode(value);
+    setDraft({
+      name: "",
+      strength: "",
+      companyName: "",
+      form: "",
+    });
     setShowScanner(false);
+  };
+  const handleBarcodeChange = (value: string) => {
+    setBarcode(value);
+    setDraft({
+      name: "",
+      strength: "",
+      companyName: "",
+      form: "",
+    });
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -81,10 +82,10 @@ function PharmacyAddMedicine() {
 
     const formData = {
       barcode: barcode.trim(),
-      name,
-      strength,
-      company_name: companyName,
-      form,
+      name: displayName,
+      strength: displayStrength,
+      company_name: displayCompanyName,
+      form: displayForm,
       cost_price: costPrice,
       default_sell_price: costPrice,
       quantity: parsedQuantity,
@@ -93,10 +94,12 @@ function PharmacyAddMedicine() {
     createMedicine(formData, {
       onSuccess: () => {
         toast.success("Medicine saved successfully.");
-        setName("");
-        setStrength("");
-        setCompanyName("");
-        setForm("");
+        setDraft({
+          name: "",
+          strength: "",
+          companyName: "",
+          form: "",
+        });
         setCostPrice("");
         setQuantity("");
         setBarcode("");
@@ -124,31 +127,41 @@ function PharmacyAddMedicine() {
                     <FieldLabel className="text-base" htmlFor="form-name">
                       Name
                     </FieldLabel>
-                    <Input
-                      id="form-name"
-                      type="text"
-                      placeholder="Paracetamol"
-                      required
-                      value={name}
-                      onChange={(event) => setName(event.target.value)}
-                      disabled={isExisting}
-                      className="h-11 text-base md:text-base"
-                    />
+                      <Input
+                        id="form-name"
+                        type="text"
+                        placeholder="Paracetamol"
+                        required
+                        value={displayName}
+                        onChange={(event) =>
+                          setDraft((prev) => ({
+                            ...prev,
+                            name: event.target.value,
+                          }))
+                        }
+                        disabled={isExisting}
+                        className="h-11 text-base md:text-base"
+                      />
                   </Field>
 
                   <Field>
                     <FieldLabel className="text-base" htmlFor="form-strength">
                       Strength
                     </FieldLabel>
-                    <Input
-                      id="form-strength"
-                      type="text"
-                      placeholder="500mg"
-                      value={strength}
-                      onChange={(event) => setStrength(event.target.value)}
-                      disabled={isExisting}
-                      className="h-11 text-base md:text-base"
-                    />
+                      <Input
+                        id="form-strength"
+                        type="text"
+                        placeholder="500mg"
+                        value={displayStrength}
+                        onChange={(event) =>
+                          setDraft((prev) => ({
+                            ...prev,
+                            strength: event.target.value,
+                          }))
+                        }
+                        disabled={isExisting}
+                        className="h-11 text-base md:text-base"
+                      />
                   </Field>
 
                   <Field className="md:col-span-2">
@@ -161,7 +174,9 @@ function PharmacyAddMedicine() {
                         type="text"
                         placeholder="Scan or enter barcode"
                         value={barcode}
-                        onChange={(event) => setBarcode(event.target.value)}
+                        onChange={(event) =>
+                          handleBarcodeChange(event.target.value)
+                        }
                         className="h-11 text-base md:text-base"
                       />
                       <Button
@@ -199,30 +214,40 @@ function PharmacyAddMedicine() {
                     <FieldLabel className="text-base" htmlFor="form-company">
                       Company
                     </FieldLabel>
-                    <Input
-                      id="form-company"
-                      type="text"
-                      placeholder="Pfizer"
-                      value={companyName}
-                      onChange={(event) => setCompanyName(event.target.value)}
-                      disabled={isExisting}
-                      className="h-11 text-base md:text-base"
-                    />
+                      <Input
+                        id="form-company"
+                        type="text"
+                        placeholder="Pfizer"
+                        value={displayCompanyName}
+                        onChange={(event) =>
+                          setDraft((prev) => ({
+                            ...prev,
+                            companyName: event.target.value,
+                          }))
+                        }
+                        disabled={isExisting}
+                        className="h-11 text-base md:text-base"
+                      />
                   </Field>
 
                   <Field>
                     <FieldLabel className="text-base" htmlFor="form-form">
                       Form
                     </FieldLabel>
-                    <Input
-                      id="form-form"
-                      type="text"
-                      placeholder="Tablets"
-                      value={form}
-                      onChange={(event) => setForm(event.target.value)}
-                      disabled={isExisting}
-                      className="h-11 text-base md:text-base"
-                    />
+                      <Input
+                        id="form-form"
+                        type="text"
+                        placeholder="Tablets"
+                        value={displayForm}
+                        onChange={(event) =>
+                          setDraft((prev) => ({
+                            ...prev,
+                            form: event.target.value,
+                          }))
+                        }
+                        disabled={isExisting}
+                        className="h-11 text-base md:text-base"
+                      />
                   </Field>
 
                   <Field>

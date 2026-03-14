@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button";
 export default function PharmacyMedicine() {
   const [searchTerm, setSearchTerm] = useState("");
   const { data, isLoading, isError, error } = useGetMedicine();
-  const medicines = data ?? [];
+  const medicines = useMemo(() => data ?? [], [data]);
 
   const filteredMedicines = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();

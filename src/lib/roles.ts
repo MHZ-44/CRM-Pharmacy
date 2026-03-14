@@ -14,7 +14,7 @@ export const ROLES = [
 
 export type Role = (typeof ROLES)[number];
 
-export const DEFAULT_ROLE: Role = "superadmin";
+export const DEFAULT_ROLE: Role = "pharmacies";
 
 export function isRole(value: string | null | undefined): value is Role {
   return !!value && (ROLES as readonly string[]).includes(value);

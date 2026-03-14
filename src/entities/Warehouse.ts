@@ -18,3 +18,21 @@ export interface Warehouse {
     name: string;
   };
 }
+
+export interface WarehouseMedicines {
+  id: number;
+  warehouse_id: number;
+  product_id: number;
+  available_quantity: number;
+  sell_price_to_pharmacy: string;
+  product: {
+    id: number;
+    barcode: string;
+    name: string;
+    strength: string;
+    company_name: string;
+    form: string;
+    created_at: string;
+    updated_at: string;
+  };
+}

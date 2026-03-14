@@ -26,7 +26,7 @@ export const useGetMedicine = () => {
       form: string;
     }[]
   >({
-    queryKey: ["medicine", paramsString],
+    queryKey: ["pharmacy", paramsString],
     queryFn: () => fetcher<Medicine[]>(url),
     select: (response) => {
       const pharmacyMedicine = Array.isArray(response)

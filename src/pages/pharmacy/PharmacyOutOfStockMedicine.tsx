@@ -14,7 +14,7 @@ import { useGetMedicine } from "@/hooks/pharmacy/useGetMedicine";
 export default function PharmacyOutOfStockMedicine() {
   const [searchTerm, setSearchTerm] = useState("");
   const { data, isLoading, isError, error } = useGetMedicine();
-  const medicines = data ?? [];
+  const medicines = useMemo(() => data ?? [], [data]);
 
   const outOfStockMedicines = useMemo(
     () => medicines.filter((medicine) => medicine.quantity === 0),

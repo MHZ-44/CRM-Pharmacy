@@ -14,10 +14,13 @@ import { useGetMedicine } from "@/hooks/pharmacy/useGetMedicine";
 export default function PharmacyLowStockMedicine() {
   const [searchTerm, setSearchTerm] = useState("");
   const { data, isLoading, isError, error } = useGetMedicine();
-  const medicines = data ?? [];
+  const medicines = useMemo(() => data ?? [], [data]);
 
   const lowStockMedicines = useMemo(
-    () => medicines.filter((medicine) => medicine.quantity > 0 && medicine.quantity < 5),
+    () =>
+      medicines.filter(
+        (medicine) => medicine.quantity > 0 && medicine.quantity < 5,
+      ),
     [medicines],
   );
 

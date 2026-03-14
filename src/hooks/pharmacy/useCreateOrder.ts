@@ -1,25 +1,30 @@
 import { post } from "@/api/mutator";
-import type { Admin } from "@/entities/Admin";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 
-export const useCreateAdmin = () => {
+export const useCreateOrder = () => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation<
     { data: string },
     AxiosError<{ error: string }>,
-    Admin & { password: string }
+    void
   >({
-    mutationFn: (data: Admin & { password: string }) =>
-      post(`/api/admin/register`, data, {
-        headers: {
-          "Content-Type": "application/json",
+    mutationFn: () =>
+      post(
+        `/api/pharmacy/order-cart/checkout`,
+        {},
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
         },
-      }),
+      ),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admins"] });
+      queryClient.setQueryData(["cart"], []);
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
     },
   });
+
   return mutation;
 };

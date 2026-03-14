@@ -1,25 +1,25 @@
-import { post } from "@/api/mutator";
-import type { Pharmacy } from "@/entities/Pharmacy";
+import { del } from "@/api/mutator";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 
-export const useCreatePharmacy = () => {
+export const useDeleteSalesCart = () => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation<
     { data: string },
     AxiosError<{ error: string }>,
-    Pharmacy & { password: string }
+    void
   >({
-    mutationFn: (data: Pharmacy & { password: string }) =>
-      post(`/api/pharmacies`, data, {
+    mutationFn: () =>
+      del(`/api/pharmacy/sales-cart`, {
         headers: {
           "Content-Type": "application/json",
         },
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["pharmacies"] });
+      queryClient.invalidateQueries({ queryKey: ["sCart"] });
     },
   });
+
   return mutation;
 };

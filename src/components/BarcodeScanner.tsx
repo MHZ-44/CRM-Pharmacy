@@ -65,7 +65,7 @@ export default function BarcodeScanner({
         controls = await codeReader.decodeFromVideoDevice(
           undefined,
           videoRef.current,
-          (result, _error) => {
+          (result) => {
             if (result) {
               if (hasCompletedScanRef.current) return;
 

@@ -8,7 +8,9 @@ const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use((config) => {
-  const token = "12|xXDZ10pMxUQY54sHCQusCA6VOqJYFNrYXuPi5jlse29c00a7";
+  const token =
+    // "2|v7zlveEQ6kGfFHo5WIttqWlh7BrWtrhGoKPZsY6k682f76f7" //admin token
+    "3|p0x8JQWqFyvjKJxyV7Q3INUGhvwfuDmATQTvFw32338c0e6f"; //pharmacy token
   // getLsValue("token");
   if (token) {
     config.headers = config.headers ?? {};
