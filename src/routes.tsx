@@ -20,7 +20,16 @@ import PharmacyAddMedicine from "./pages/pharmacy/PharmacyAddMedicine";
 import PharmacyShowWarehouses from "./pages/pharmacy/PharmacyShowWarehouses";
 import PharmacyWarehouseMedicines from "./pages/pharmacy/PharmacyWarehouseMedicines";
 import PharmacyCart from "./pages/pharmacy/PharmacyCart";
-import PharmacySales from "./pages/pharmacy/PharmacySales";
+import PharmacySalesInvoices from "./pages/pharmacy/PharmacySalesInvoices";
+import PharmacySalesCart from "./pages/pharmacy/PharmacySalesCart";
+import PharmacyFeedbackInvoices from "./pages/pharmacy/PharmacyFeedbackInvoices";
+import PharmacyExpenseInvoices from "./pages/pharmacy/PharmacyExpenseInvoices";
+import WarehouseHomePage from "./pages/warehouse/WarehouseHomePage";
+import WarehouseLowStockMedicine from "./pages/warehouse/WarehouseLowStockMedicine";
+import WarehouseOutOfStockMedicine from "./pages/warehouse/WarehouseOutOfStockMedicine";
+import WarehouseInventory from "./pages/warehouse/WarehouseInventoryPage";
+import WarehouseAddMedicine from "./pages/warehouse/WarehouseAddMedicine";
+import WarehouseOrders from "./pages/warehouse/WarehouseOrdersPage";
 
 const router = createBrowserRouter([
   {
@@ -66,28 +75,48 @@ const router = createBrowserRouter([
       {
         element: <RequireRole allowed={["pharmacies"]} />,
         children: [
-          { path: "", element: <PharmacyMedicine /> },
-          { path: "pharmacy/low-stock", element: <PharmacyLowStockMedicine /> },
+          { path: "", element: <WarehouseHomePage /> },
+          { path: "pharmacy/medicines", element: <WarehouseInventory /> },
+          {
+            path: "pharmacy/low-stock",
+            element: <WarehouseLowStockMedicine />,
+          },
           {
             path: "pharmacy/out-of-stock",
-            element: <PharmacyOutOfStockMedicine />,
+            element: <WarehouseOutOfStockMedicine />,
           },
           {
             path: "/pharmacy/medicines/create",
-            element: <PharmacyAddMedicine />,
+            element: <WarehouseAddMedicine />,
           },
           {
             path: "/pharmacy/warehouses",
-            element: <PharmacyShowWarehouses />,
+            element: <WarehouseOrders />,
           },
-          {
-            path: "/pharmacy/warehouses/:warehouseId/medicines",
-            element: <PharmacyWarehouseMedicines />,
-          },
-          {
-            path: "/pharmacy/cart",
-            element: <PharmacySales />,
-          },
+          // {
+          //   path: "/pharmacy/warehouses/:warehouseId/medicines",
+          //   element: <PharmacyWarehouseMedicines />,
+          // },
+          // {
+          //   path: "/pharmacy/cart",
+          //   element: <PharmacyCart />,
+          // },
+          // {
+          //   path: "/pharmacy/invoices/sales",
+          //   element: <PharmacySalesInvoices />,
+          // },
+          // {
+          //   path: "/pharmacy/sales-cart",
+          //   element: <PharmacySalesCart />,
+          // },
+          // {
+          //   path: "/pharmacy/invoices/feedback",
+          //   element: <PharmacyFeedbackInvoices />,
+          // },
+          // {
+          //   path: "/pharmacy/invoices/expenses",
+          //   element: <PharmacyExpenseInvoices />,
+          // },
         ],
       },
 

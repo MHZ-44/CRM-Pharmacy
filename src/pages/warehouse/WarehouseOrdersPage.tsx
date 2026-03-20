@@ -66,7 +66,7 @@ export default function WarehouseOrders() {
   };
 
   return (
-    <div className="min-h-screen p-8 space-y-8 bg-gradient-to-br from-white via-slate-100 to-blue-50 text-slate-900 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 dark:text-slate-100">
+    <div className="min-h-screen p-8 space-y-8 bg-gradient-to-br from-white via-slate-200 to-blue-100 text-slate-900 dark:from-gray-900 dark:via-slate-900 dark:to-blue-950 dark:text-slate-100">
       <div>
         <h1 className="text-3xl font-bold text-blue-800 dark:text-blue-200">
           Warehouse Orders

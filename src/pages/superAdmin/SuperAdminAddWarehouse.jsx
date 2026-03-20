@@ -61,7 +61,7 @@ export default function SuperAdminAddWarehouse() {
   };
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center px-4 transition-colors duration-500 bg-gradient-to-br from-white via-slate-400 to-blue-100 dark:from-gray-900 dark:via-slate-900 dark:to-blue-950">
+    <div className="min-h-screen relative flex items-center justify-center px-4 transition-colors duration-500 bg-gradient-to-br from-white via-slate-200 to-blue-100 dark:from-gray-900 dark:via-slate-900 dark:to-blue-950">
 
       {/* SINGLE CARD */}
       <motion.div

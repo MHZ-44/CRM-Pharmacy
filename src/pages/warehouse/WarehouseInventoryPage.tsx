@@ -94,7 +94,7 @@ export default function WarehouseInventory() {
   );
 
   return (
-    <div className="min-h-screen p-8 space-y-8 text-[18px] bg-gradient-to-br from-white via-slate-100 to-blue-50">
+    <div className="min-h-screen p-8 space-y-8 text-[18px] bg-gradient-to-br from-white via-slate-200 to-blue-100 text-slate-900 dark:from-gray-900 dark:via-slate-900 dark:to-blue-950 dark:text-slate-100">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>

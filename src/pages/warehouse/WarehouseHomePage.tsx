@@ -2,7 +2,7 @@ import { Package, AlertTriangle, Clock, ShoppingCart } from "lucide-react";
 
 export default function WarehouseHomePage() {
   return (
-    <div className="min-h-screen p-8 bg-gradient-to-br from-white via-slate-100 to-blue-50 text-slate-900 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 dark:text-slate-100">
+    <div className="min-h-screen p-8 bg-gradient-to-br from-white via-slate-200 to-blue-100 text-slate-900 dark:from-gray-900 dark:via-slate-900 dark:to-blue-950 dark:text-slate-100">
       
       {/* Header */}
       <div className="mb-8">

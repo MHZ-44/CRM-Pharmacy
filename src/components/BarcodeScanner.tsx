@@ -24,6 +24,8 @@ type BarcodeScannerProps = {
   stabilizeMs?: number;
   allowedLengths?: number[];
   possibleFormats?: BarcodeFormat[];
+  continuous?: boolean;
+  cooldownMs?: number;
 };
 export default function BarcodeScanner({
   onScan,
@@ -33,6 +35,8 @@ export default function BarcodeScanner({
   stabilizeMs = 700,
   allowedLengths,
   possibleFormats,
+  continuous = false,
+  cooldownMs = 1500,
 }: BarcodeScannerProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const hasCompletedScanRef = useRef(false);
@@ -40,6 +44,8 @@ export default function BarcodeScanner({
   const lastCandidateRef = useRef("");
   const candidateCountRef = useRef(0);
   const candidateFirstSeenAtRef = useRef(0);
+  const lastAcceptedValueRef = useRef("");
+  const lastAcceptedAtRef = useRef(0);
 
   useEffect(() => {
     onScanRef.current = onScan;
@@ -54,6 +60,8 @@ export default function BarcodeScanner({
     lastCandidateRef.current = "";
     candidateCountRef.current = 0;
     candidateFirstSeenAtRef.current = 0;
+    lastAcceptedValueRef.current = "";
+    lastAcceptedAtRef.current = 0;
 
     let controls: IScannerControls | null = null;
     let cancelled = false;
@@ -109,6 +117,20 @@ export default function BarcodeScanner({
                 Date.now() - candidateFirstSeenAtRef.current <
                 Math.max(0, stabilizeMs)
               ) {
+                return;
+              }
+
+              if (continuous) {
+                const now = Date.now();
+                if (
+                  text === lastAcceptedValueRef.current &&
+                  now - lastAcceptedAtRef.current < Math.max(0, cooldownMs)
+                ) {
+                  return;
+                }
+                lastAcceptedValueRef.current = text;
+                lastAcceptedAtRef.current = now;
+                onScanRef.current(text);
                 return;
               }
 
