@@ -1,26 +1,24 @@
-import { del } from "@/api/mutator";
+import { post } from "@/api/mutator";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 
-export const useDeleteSalesCart = () => {
+export const useCreatePrice = () => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation<
     { data: string },
     AxiosError<{ error: string }>,
-    void
+    { paid_total: number }
   >({
-    mutationFn: () =>
-      del(`/api/pharmacy/sales-cart`, {
+    mutationFn: (data: { paid_total: number }) =>
+      post(`/api/pharmacy/sales-cart/checkout`, data, {
         headers: {
           "Content-Type": "application/json",
         },
       }),
     onSuccess: () => {
-      queryClient.removeQueries({ queryKey: ["sCart"] });
-      queryClient.setQueryData(["sCart"], []);
+      queryClient.invalidateQueries({ queryKey: ["sCart"] });
     },
   });
-
   return mutation;
 };

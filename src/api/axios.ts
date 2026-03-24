@@ -11,6 +11,7 @@ axiosInstance.interceptors.request.use((config) => {
   const token =
     // "2|v7zlveEQ6kGfFHo5WIttqWlh7BrWtrhGoKPZsY6k682f76f7" //admin token
     "3|p0x8JQWqFyvjKJxyV7Q3INUGhvwfuDmATQTvFw32338c0e6f"; //pharmacy token
+  // "4|OTi3AVBKgy70suIiT1WOAcN7Q98LXFAluWCJ9gs7bdd21723"; //warehouse token
   // getLsValue("token");
   if (token) {
     config.headers = config.headers ?? {};

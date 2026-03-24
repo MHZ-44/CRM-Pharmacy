@@ -69,9 +69,35 @@ function PharmacyAddMedicine() {
     e.preventDefault();
 
     const parsedQuantity = Number.parseInt(quantity, 10);
+    const parsedCostPrice = Number.parseFloat(costPrice);
 
     if (!barcode.trim()) {
       toast.error("Barcode is required.");
+      return;
+    }
+
+    if (!displayName.trim()) {
+      toast.error("Medicine name is required.");
+      return;
+    }
+
+    if (!displayStrength.trim()) {
+      toast.error("Strength is required.");
+      return;
+    }
+
+    if (!displayCompanyName.trim()) {
+      toast.error("Company is required.");
+      return;
+    }
+
+    if (!displayForm.trim()) {
+      toast.error("Form is required.");
+      return;
+    }
+
+    if (Number.isNaN(parsedCostPrice) || parsedCostPrice <= 0) {
+      toast.error("Cost price must be a valid positive number.");
       return;
     }
 
@@ -86,8 +112,8 @@ function PharmacyAddMedicine() {
       strength: displayStrength,
       company_name: displayCompanyName,
       form: displayForm,
-      cost_price: costPrice,
-      default_sell_price: costPrice,
+      cost_price: parsedCostPrice,
+      default_sell_price: parsedCostPrice,
       quantity: parsedQuantity,
     };
 
@@ -112,13 +138,18 @@ function PharmacyAddMedicine() {
   };
 
   return (
-    <div className="min-h-full w-full bg-muted/30">
+    <div className="min-h-screen w-full bg-gradient-to-br from-white via-slate-200 to-blue-100 text-slate-900 dark:from-gray-900 dark:via-slate-900 dark:to-blue-950 dark:text-slate-100">
       <div className="flex w-full flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
-        <h1 className="text-4xl font-semibold tracking-tight">
-          Create Medicine
-        </h1>
+        <div>
+          <h1 className="text-4xl font-semibold tracking-tight text-blue-800 dark:text-blue-300">
+            Create Medicine
+          </h1>
+          <p className="text-sm text-blue-600 dark:text-blue-300">
+            Add or scan a medicine to your pharmacy inventory
+          </p>
+        </div>
 
-        <Card className="w-full">
+        <Card className="w-full border border-slate-200 bg-white shadow-lg dark:border-slate-800 dark:bg-gray-900">
           <CardContent className="px-8">
             <form className="w-full text-lg" onSubmit={handleSubmit}>
               <FieldGroup>
@@ -140,7 +171,7 @@ function PharmacyAddMedicine() {
                           }))
                         }
                         disabled={isExisting}
-                        className="h-11 text-base md:text-base"
+                        className="h-11 text-base md:text-base dark:bg-slate-900"
                       />
                   </Field>
 
@@ -160,7 +191,7 @@ function PharmacyAddMedicine() {
                           }))
                         }
                         disabled={isExisting}
-                        className="h-11 text-base md:text-base"
+                        className="h-11 text-base md:text-base dark:bg-slate-900"
                       />
                   </Field>
 
@@ -177,7 +208,7 @@ function PharmacyAddMedicine() {
                         onChange={(event) =>
                           handleBarcodeChange(event.target.value)
                         }
-                        className="h-11 text-base md:text-base"
+                        className="h-11 text-base md:text-base dark:bg-slate-900"
                       />
                       <Button
                         type="button"
@@ -226,7 +257,7 @@ function PharmacyAddMedicine() {
                           }))
                         }
                         disabled={isExisting}
-                        className="h-11 text-base md:text-base"
+                        className="h-11 text-base md:text-base dark:bg-slate-900"
                       />
                   </Field>
 
@@ -246,7 +277,7 @@ function PharmacyAddMedicine() {
                           }))
                         }
                         disabled={isExisting}
-                        className="h-11 text-base md:text-base"
+                        className="h-11 text-base md:text-base dark:bg-slate-900"
                       />
                   </Field>
 
@@ -261,7 +292,7 @@ function PharmacyAddMedicine() {
                       placeholder="2.50"
                       value={costPrice}
                       onChange={(event) => setCostPrice(event.target.value)}
-                      className="h-11 text-base md:text-base"
+                      className="h-11 text-base md:text-base dark:bg-slate-900"
                     />
                   </Field>
 
@@ -275,7 +306,7 @@ function PharmacyAddMedicine() {
                       placeholder="0"
                       value={quantity}
                       onChange={(event) => setQuantity(event.target.value)}
-                      className="h-11 text-base md:text-base"
+                      className="h-11 text-base md:text-base dark:bg-slate-900"
                     />
                   </Field>
                 </div>
@@ -284,7 +315,11 @@ function PharmacyAddMedicine() {
                   <Button type="button" variant="outline">
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={isPending}>
+                  <Button
+                    type="submit"
+                    disabled={isPending}
+                    className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-400 dark:hover:bg-blue-500"
+                  >
                     {isPending ? "Submitting..." : "Submit"}
                   </Button>
                 </Field>

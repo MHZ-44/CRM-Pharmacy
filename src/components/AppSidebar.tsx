@@ -20,6 +20,9 @@ import {
 import {
   FiAlertTriangle,
   FiHome,
+  FiMessageSquare,
+  FiFileText,
+  FiTrendingDown,
   FiPlusCircle,
   FiShoppingCart,
   FiSlash,
@@ -28,6 +31,9 @@ import { LuWarehouse } from "react-icons/lu";
 import {
   MdOutlineLocalPharmacy,
   MdOutlinePeopleAlt,
+  MdOutlineReceipt,
+  MdOutlineReceiptLong,
+  MdOutlineRateReview,
   MdOutlineSettings,
 } from "react-icons/md";
 import { NavLink, useLocation } from "react-router-dom";
@@ -95,11 +101,7 @@ export function AppSidebar() {
         expandedByHoverRef.current = false;
         setOpen(false);
       }}
-      className={
-        isPharmacy
-          ? "top-16 h-[calc(100svh-4rem)] border-r border-blue-200/60 bg-gradient-to-b from-white via-slate-100 to-blue-50 shadow-lg transition-colors duration-500 dark:border-slate-800/80 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800"
-          : "top-16 h-[calc(100svh-4rem)] bg-gradient-to-b from-white via-slate-200 to-blue-100 shadow-lg transition-colors duration-500"
-      }
+      className="top-16 h-[calc(100svh-4rem)] border-r border-black/5 shadow-none backdrop-blur transition-colors duration-500 dark:border-white/10 [&_[data-slot=sidebar-inner]]:!bg-gradient-to-b [&_[data-slot=sidebar-inner]]:from-white/80 [&_[data-slot=sidebar-inner]]:via-white/60 [&_[data-slot=sidebar-inner]]:to-white/40 dark:[&_[data-slot=sidebar-inner]]:from-gray-900/80 dark:[&_[data-slot=sidebar-inner]]:via-gray-900/60 dark:[&_[data-slot=sidebar-inner]]:to-gray-900/40"
     >
       {isPharmacy ? (
         <SidebarContent>
@@ -110,18 +112,94 @@ export function AppSidebar() {
                 size="lg"
                 isActive={
                   location.pathname === "/" ||
+                  location.pathname === "/pharmacy/invoices/sales"
+                }
+                className={`text-base [&>svg]:size-5 ${
+                  location.pathname === "/" ||
+                  location.pathname === "/pharmacy/invoices/sales"
+                    ? "bg-blue-200 text-blue-800 font-semibold"
+                    : "text-blue-700 hover:bg-blue-100"
+                }`}
+              >
+                <NavLink to="/">
+                  <FiShoppingCart />
+                  <span className="group-data-[collapsible=icon]:hidden">
+                    Sales Cart
+                  </span>
+                </NavLink>
+              </SidebarMenuButton>
+              <SidebarMenuSub>
+                <SidebarMenuSubItem>
+                  <SidebarMenuSubButton
+                    asChild
+                    isActive={location.pathname === "/pharmacy/invoices/sales"}
+                    className="text-blue-700"
+                  >
+                    <NavLink to="/pharmacy/invoices/sales">
+                      <MdOutlineReceipt />
+                      <span>Sales Invoices</span>
+                    </NavLink>
+                  </SidebarMenuSubButton>
+                </SidebarMenuSubItem>
+              </SidebarMenuSub>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                size="lg"
+                isActive={location.pathname === "/pharmacy/invoices/feedback"}
+                className={`text-base [&>svg]:size-5 ${
+                  location.pathname === "/pharmacy/invoices/feedback"
+                    ? "bg-blue-200 text-blue-800 font-semibold"
+                    : "text-blue-700 hover:bg-blue-100"
+                }`}
+              >
+                <NavLink to="/pharmacy/invoices/feedback">
+                  <MdOutlineRateReview />
+                  <span className="group-data-[collapsible=icon]:hidden">
+                    Feedback Invoices
+                  </span>
+                </NavLink>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                size="lg"
+                isActive={location.pathname === "/pharmacy/invoices/expenses"}
+                className={`text-base [&>svg]:size-5 ${
+                  location.pathname === "/pharmacy/invoices/expenses"
+                    ? "bg-blue-200 text-blue-800 font-semibold"
+                    : "text-blue-700 hover:bg-blue-100"
+                }`}
+              >
+                <NavLink to="/pharmacy/invoices/expenses">
+                  <MdOutlineReceiptLong />
+                  <span className="group-data-[collapsible=icon]:hidden">
+                    Expense Invoices
+                  </span>
+                </NavLink>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                asChild
+                size="lg"
+                isActive={
+                  location.pathname === "/pharmacy/medicines" ||
                   location.pathname.startsWith("/pharmacy/low-stock") ||
                   location.pathname.startsWith("/pharmacy/out-of-stock")
                 }
                 className={`text-base [&>svg]:size-5 ${
-                  location.pathname === "/" ||
+                  location.pathname === "/pharmacy/medicines" ||
                   location.pathname.startsWith("/pharmacy/low-stock") ||
                   location.pathname.startsWith("/pharmacy/out-of-stock")
                     ? "bg-blue-200 text-blue-800 font-semibold"
                     : "text-blue-700 hover:bg-blue-100"
                 }`}
               >
-                <NavLink to="/">
+                <NavLink to="/pharmacy/medicines">
                   <MdOutlineLocalPharmacy />
                   <span className="group-data-[collapsible=icon]:hidden">
                     All Medicines

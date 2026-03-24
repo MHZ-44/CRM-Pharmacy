@@ -40,7 +40,7 @@ export default function WarehouseAddMedicine() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-8 bg-gradient-to-br from-white via-slate-100 to-blue-50">
+    <div className="min-h-screen flex items-center justify-center p-8 bg-gradient-to-br from-white via-slate-200 to-blue-100 dark:from-gray-900 dark:via-slate-900 dark:to-blue-950 text-slate-900 dark:text-slate-100">
 
       <form
         onSubmit={handleSubmit}

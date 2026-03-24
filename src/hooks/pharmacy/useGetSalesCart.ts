@@ -38,7 +38,7 @@ const getSourceEntries = (response: unknown): unknown[] => {
   return response ? [response] : [];
 };
 
-export const useGetSalesCart = () => {
+export const useGetSalesCart = (enabled = true) => {
   const [searchParams] = useSearchParams();
 
   const paramsString = searchParams.toString();
@@ -64,6 +64,7 @@ export const useGetSalesCart = () => {
   >({
     queryKey: ["sCart", paramsString],
     queryFn: () => fetcher<unknown>(url),
+    enabled,
     select: (response) => {
       const source = getSourceEntries(response);
 

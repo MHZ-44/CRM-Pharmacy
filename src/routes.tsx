@@ -20,13 +20,20 @@ import PharmacyAddMedicine from "./pages/pharmacy/PharmacyAddMedicine";
 import PharmacyShowWarehouses from "./pages/pharmacy/PharmacyShowWarehouses";
 import PharmacyWarehouseMedicines from "./pages/pharmacy/PharmacyWarehouseMedicines";
 import PharmacyCart from "./pages/pharmacy/PharmacyCart";
-import PharmacySales from "./pages/pharmacy/PharmacySales";
+import PharmacySalesCart from "./pages/pharmacy/PharmacySalesCart";
+import PharmacyExpenseInvoices from "./pages/pharmacy/PharmacyExpenseInvoices";
+import PharmacyFeedbackInvoices from "./pages/pharmacy/PharmacyFeedbackInvoices";
 import WarehouseHomePage from "./pages/warehouse/WarehouseHomePage";
 import WarehouseAddMedicine from "./pages/warehouse/WarehouseAddMedicinePage";
 import WarehouseInventory from "./pages/warehouse/WarehouseInventoryPage";
 import WarehouseOrders from "./pages/warehouse/WarehouseOrdersPage";
 import WarehouseLowStockMedicine from "./pages/warehouse/WarehouseLowStockMedicinePage";
 import WarehouseOutOfStockMedicine from "./pages/warehouse/WarehouseOutOfStockMedicinePage";
+import WarehouseCreateExpenseInvoice from "./pages/warehouse/WarehouseCreateExpenseInvoices";
+import WarehouseInvoices from "./pages/warehouse/WarehouseInvoices";
+
+import WarehousePendingInvoices from "./pages/warehouse/WarehousePendingInvoices";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -62,52 +69,59 @@ const router = createBrowserRouter([
        {
         element: <RequireRole allowed={["warehouse"]} />,
         children: [
-           { path: "warehouse/home", element: <WarehouseHomePage/> },
-           { path: "warehouse/inventory", element: <WarehouseInventory /> },
-           { path: "warehouse/orders", element: <WarehouseOrders/> },
-           { path: "warehouse/add-medicine", element: <WarehouseAddMedicine/> },
-           { path: "warehouse/low-stock", element: <WarehouseLowStockMedicine/> },
-           { path: "warehouse/out-of-stock", element: <WarehouseOutOfStockMedicine/> },
+           { path: "/warehouse/home", element: <WarehouseHomePage/> },
+           { path: "/warehouse/inventory", element: <WarehouseInventory /> },
+           { path: "/warehouse/orders", element: <WarehouseOrders/> },
+           { path: "/warehouse/add-medicine", element: <WarehouseAddMedicine/> },
+           { path: "/warehouse/low-stock", element: <WarehouseLowStockMedicine/> },
+           { path: "/warehouse/out-of-stock", element: <WarehouseOutOfStockMedicine/> },
+           
            
 
 
         ],
-      },
+      }, 
+      
 
       {
         element: <RequireRole allowed={["pharmacies"]} />,
         children: [
-          { path: "", element: <PharmacyMedicine /> },
-          { path: "pharmacy/low-stock", element: <PharmacyLowStockMedicine /> },
-          {
-            path: "pharmacy/out-of-stock",
-            element: <PharmacyOutOfStockMedicine />,
+          { path: "", element: <WarehouseHomePage /> },
+          { path: "pharmacy/medicines", 
+            element: <WarehouseInventory /> },
+            {
+            path: "pharmacy/low-stock",
+            element: <WarehouseLowStockMedicine />,
           },
           {
-            path: "/pharmacy/medicines/create",
-            element: <PharmacyAddMedicine />,
+            path: "pharmacy/out-of-stock",
+            element: <WarehouseOutOfStockMedicine />,
+          },
+          {
+            path: "/pharmacy/expense-invoices",
+            element: <WarehouseInvoices/>,
           },
           {
             path: "/pharmacy/warehouses",
-            element: <PharmacyShowWarehouses />,
-          },
-          {
-            path: "/pharmacy/warehouses/:warehouseId/medicines",
-            element: <PharmacyWarehouseMedicines />,
-          },
-          {
-            path: "/pharmacy/cart",
-            element: <PharmacySales />,
+            element: <WarehouseInvoices/>,
           },
           {
             path: "/pharmacy/carts",
             element: <PharmacyCart />,
           },
+         /* {
+            path:"/pharmacy/expense-invoices",
+            element: <WarehouseCreateExpenseInvoice/>,
+          }, */
+          {
+            path:"/pharmacy/feedback-invoices",
+            element: <PharmacyFeedbackInvoices />,
+          }
 
         ],
       },
 
-      { path: "*", element: <RoleHomeRedirect /> },
+      /*{ path: "*", element: <RoleHomeRedirect /> }, */
     ],
   },
 ]);
