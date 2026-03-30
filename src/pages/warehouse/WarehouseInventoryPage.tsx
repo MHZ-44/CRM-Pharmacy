@@ -98,11 +98,11 @@ export default function WarehouseInventory() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold text-blue-800">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
             Warehouse Inventory
           </h1>
 
-          <p className="text-blue-600 text-sm mt-1">
+          <p className="text-slate-600 text-sm mt-1 dark:text-slate-300">
             Live stock levels across the warehouse
           </p>
         </div>
@@ -117,41 +117,51 @@ export default function WarehouseInventory() {
       {/* STOCK CARDS */}
       <div className="grid grid-cols-2 gap-6">
         <Link to="/warehouse/low">
-          <div className="cursor-pointer bg-yellow-100 hover:bg-yellow-200 transition p-6 rounded-2xl shadow-md">
-            <h2 className="text-xl font-bold text-yellow-700">Low Stock</h2>
-            <p className="text-3xl font-bold mt-2">{lowStockProducts.length}</p>
-            <p className="text-sm text-yellow-700">Medicines below 10 items</p>
+          <div className="cursor-pointer bg-yellow-100 hover:bg-yellow-200 transition p-6 rounded-2xl shadow-md dark:bg-yellow-500/10 dark:hover:bg-yellow-500/20">
+            <h2 className="text-xl font-bold text-yellow-800 dark:text-yellow-300">
+              Low Stock
+            </h2>
+            <p className="text-3xl font-bold mt-2 text-slate-900 dark:text-slate-100">
+              {lowStockProducts.length}
+            </p>
+            <p className="text-sm text-yellow-800 dark:text-yellow-300">
+              Medicines below 10 items
+            </p>
           </div>
         </Link>
 
         <Link to="/warehouse/out">
-          <div className="cursor-pointer bg-red-100 hover:bg-red-200 transition p-6 rounded-2xl shadow-md">
-            <h2 className="text-xl font-bold text-red-700">Out of Stock</h2>
-            <p className="text-3xl font-bold mt-2">
+          <div className="cursor-pointer bg-red-100 hover:bg-red-200 transition p-6 rounded-2xl shadow-md dark:bg-red-500/10 dark:hover:bg-red-500/20">
+            <h2 className="text-xl font-bold text-red-700 dark:text-red-300">
+              Out of Stock
+            </h2>
+            <p className="text-3xl font-bold mt-2 text-slate-900 dark:text-slate-100">
               {outOfStockProducts.length}
             </p>
-            <p className="text-sm text-red-700">Medicines finished</p>
+            <p className="text-sm text-red-700 dark:text-red-300">
+              Medicines finished
+            </p>
           </div>
         </Link>
       </div>
 
       {/* Search */}
       <div className="relative w-full">
-        <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-xl" />
+        <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-xl dark:text-slate-400" />
 
         <input
           type="text"
           placeholder="Search medicine..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-12 pr-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm"
+          className="w-full pl-12 pr-4 py-3 border rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
         />
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto rounded-2xl shadow-xl border bg-white">
+      <div className="overflow-x-auto rounded-2xl shadow-xl border bg-white dark:border-slate-800 dark:bg-slate-900 dark:shadow-none">
         <table className="w-full border-collapse">
-          <thead className="bg-blue-100 text-lg">
+          <thead className="bg-blue-100 text-lg dark:bg-slate-800">
             <tr>
               <th className="p-4 text-left">Name</th>
               <th className="p-4 text-left">Strength</th>
@@ -166,9 +176,11 @@ export default function WarehouseInventory() {
             {filteredProducts.map((product, index) => (
               <tr
                 key={product.id}
-                className={`border-b ${
-                  index % 2 === 0 ? "bg-white" : "bg-gray-100"
-                } hover:bg-blue-50 transition`}
+                className={`border-b dark:border-slate-800 ${
+                  index % 2 === 0
+                    ? "bg-white dark:bg-slate-900"
+                    : "bg-gray-100 dark:bg-slate-900/60"
+                } hover:bg-blue-50 dark:hover:bg-slate-800/70 transition`}
               >
                 <td className="p-4 font-semibold">{product.name}</td>
                 <td className="p-4">{product.strength || "—"}</td>

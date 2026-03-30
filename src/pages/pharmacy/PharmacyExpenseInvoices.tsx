@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { FiSearch } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -11,14 +12,47 @@ import {
 
 export default function PharmacyExpenseInvoices() {
   const [searchTerm, setSearchTerm] = useState("");
-  const invoices = useMemo(() => [], []);
+  const [selectedInvoiceId, setSelectedInvoiceId] = useState<number | null>(
+    null,
+  );
+  const navigate = useNavigate();
+  const invoices = useMemo(
+    () => [
+      {
+        id: 301,
+        vendor: "Packaging Supplier",
+        date: "2026-03-03",
+        total: 120,
+        status: "Paid",
+      },
+      {
+        id: 302,
+        vendor: "Labels Store",
+        date: "2026-03-08",
+        total: 45,
+        status: "Pending",
+      },
+      {
+        id: 303,
+        vendor: "Office Stationery",
+        date: "2026-03-14",
+        total: 78,
+        status: "Paid",
+      },
+    ],
+    [],
+  );
 
   const filteredInvoices = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
     if (!term) return invoices;
 
     return invoices.filter((invoice) =>
-      String(invoice).toLowerCase().includes(term),
+      [invoice.id, invoice.vendor, invoice.date, invoice.total, invoice.status]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase()
+        .includes(term),
     );
   }, [invoices, searchTerm]);
 
@@ -74,17 +108,25 @@ export default function PharmacyExpenseInvoices() {
               filteredInvoices.map((invoice, index) => (
                 <TableRow
                   key={index}
+                  onClick={() => {
+                    setSelectedInvoiceId(invoice.id);
+                    navigate(`/pharmacy/invoices/expenses/${invoice.id}`);
+                  }}
                   className={`transition hover:bg-blue-50 dark:hover:bg-slate-800/70 ${
-                    index % 2 === 0
-                      ? "bg-white dark:bg-slate-900"
-                      : "bg-gray-100 dark:bg-slate-900/60"
+                    selectedInvoiceId === invoice.id
+                      ? "bg-blue-100 dark:bg-slate-800"
+                      : index % 2 === 0
+                        ? "bg-white dark:bg-slate-900"
+                        : "bg-gray-100 dark:bg-slate-900/60"
                   }`}
                 >
-                  <TableCell className="p-4">—</TableCell>
-                  <TableCell className="p-4">—</TableCell>
-                  <TableCell className="p-4">—</TableCell>
-                  <TableCell className="p-4">—</TableCell>
-                  <TableCell className="p-4">—</TableCell>
+                  <TableCell className="p-4 font-semibold">
+                    {invoice.id}
+                  </TableCell>
+                  <TableCell className="p-4">{invoice.vendor}</TableCell>
+                  <TableCell className="p-4">{invoice.date}</TableCell>
+                  <TableCell className="p-4">{invoice.total}</TableCell>
+                  <TableCell className="p-4">{invoice.status}</TableCell>
                 </TableRow>
               ))
             )}

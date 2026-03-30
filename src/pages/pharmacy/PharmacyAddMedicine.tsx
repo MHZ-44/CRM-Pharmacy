@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { BarcodeFormat } from "@zxing/browser";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -45,15 +45,70 @@ function PharmacyAddMedicine() {
     : draft.companyName;
   const displayForm = isExisting ? medicineByBarcode?.form ?? "" : draft.form;
 
+  const tryAutoSubmit = useCallback(
+    (nextBarcode: string) => {
+      const parsedQuantity = Number.parseInt(quantity, 10);
+      const parsedCostPrice = Number.parseFloat(costPrice);
+
+      if (!nextBarcode.trim()) return;
+      if (!displayName.trim()) return;
+      if (!displayStrength.trim()) return;
+      if (!displayCompanyName.trim()) return;
+      if (!displayForm.trim()) return;
+      if (Number.isNaN(parsedCostPrice) || parsedCostPrice <= 0) return;
+      if (Number.isNaN(parsedQuantity) || parsedQuantity < 0) return;
+
+      const formData = {
+        barcode: nextBarcode.trim(),
+        name: displayName,
+        strength: displayStrength,
+        company_name: displayCompanyName,
+        form: displayForm,
+        cost_price: parsedCostPrice,
+        default_sell_price: parsedCostPrice,
+        quantity: parsedQuantity,
+      };
+
+      createMedicine(formData, {
+        onSuccess: () => {
+          toast.success("Medicine saved successfully.");
+          setDraft({
+            name: "",
+            strength: "",
+            companyName: "",
+            form: "",
+          });
+          setCostPrice("");
+          setQuantity("");
+          setBarcode("");
+        },
+        onError: (error) => {
+          toast.error(getApiErrorMessage(error, "Failed to save medicine."));
+        },
+      });
+    },
+    [
+      costPrice,
+      quantity,
+      displayName,
+      displayStrength,
+      displayCompanyName,
+      displayForm,
+      createMedicine,
+    ],
+  );
+
   const handleScan = (value: string) => {
-    setBarcode(value);
+    const trimmed = value.trim();
+    if (!trimmed) return;
+    setBarcode(trimmed);
     setDraft({
       name: "",
       strength: "",
       companyName: "",
       form: "",
     });
-    setShowScanner(false);
+    tryAutoSubmit(trimmed);
   };
   const handleBarcodeChange = (value: string) => {
     setBarcode(value);
@@ -235,6 +290,8 @@ function PharmacyAddMedicine() {
                           stabilizeMs={800}
                           allowedLengths={PRODUCT_BARCODE_LENGTHS}
                           possibleFormats={PRODUCT_BARCODE_FORMATS}
+                          continuous
+                          cooldownMs={1500}
                           onScan={handleScan}
                         />
                       </div>

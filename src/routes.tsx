@@ -21,9 +21,12 @@ import PharmacyShowWarehouses from "./pages/pharmacy/PharmacyShowWarehouses";
 import PharmacyWarehouseMedicines from "./pages/pharmacy/PharmacyWarehouseMedicines";
 import PharmacyCart from "./pages/pharmacy/PharmacyCart";
 import PharmacySalesInvoices from "./pages/pharmacy/PharmacySalesInvoices";
+import PharmacySalesInvoiceDetails from "./pages/pharmacy/PharmacySalesInvoiceDetails";
 import PharmacySalesCart from "./pages/pharmacy/PharmacySalesCart";
 import PharmacyFeedbackInvoices from "./pages/pharmacy/PharmacyFeedbackInvoices";
+import PharmacyFeedbackInvoiceDetails from "./pages/pharmacy/PharmacyFeedbackInvoiceDetails";
 import PharmacyExpenseInvoices from "./pages/pharmacy/PharmacyExpenseInvoices";
+import PharmacyExpenseInvoiceDetails from "./pages/pharmacy/PharmacyExpenseInvoiceDetails";
 import WarehouseHomePage from "./pages/warehouse/WarehouseHomePage";
 import WarehouseLowStockMedicine from "./pages/warehouse/WarehouseLowStockMedicine";
 import WarehouseOutOfStockMedicine from "./pages/warehouse/WarehouseOutOfStockMedicine";
@@ -75,52 +78,64 @@ const router = createBrowserRouter([
       {
         element: <RequireRole allowed={["pharmacies"]} />,
         children: [
-          { path: "", element: <WarehouseHomePage /> },
-          { path: "pharmacy/medicines", element: <WarehouseInventory /> },
+          { path: "", element: <PharmacySalesCart /> },
+          { path: "pharmacy/medicines", element: <PharmacyMedicine /> },
           {
             path: "pharmacy/low-stock",
-            element: <WarehouseLowStockMedicine />,
+            element: <PharmacyLowStockMedicine />,
           },
           {
             path: "pharmacy/out-of-stock",
-            element: <WarehouseOutOfStockMedicine />,
+            element: <PharmacyOutOfStockMedicine />,
           },
           {
             path: "/pharmacy/medicines/create",
-            element: <WarehouseAddMedicine />,
+            element: <PharmacyAddMedicine />,
           },
           {
             path: "/pharmacy/warehouses",
-            element: <WarehouseOrders />,
+            element: <PharmacyShowWarehouses />,
           },
-          // {
-          //   path: "/pharmacy/warehouses/:warehouseId/medicines",
-          //   element: <PharmacyWarehouseMedicines />,
-          // },
-          // {
-          //   path: "/pharmacy/cart",
-          //   element: <PharmacyCart />,
-          // },
-          // {
-          //   path: "/pharmacy/invoices/sales",
-          //   element: <PharmacySalesInvoices />,
-          // },
-          // {
-          //   path: "/pharmacy/sales-cart",
-          //   element: <PharmacySalesCart />,
-          // },
-          // {
-          //   path: "/pharmacy/invoices/feedback",
-          //   element: <PharmacyFeedbackInvoices />,
-          // },
-          // {
-          //   path: "/pharmacy/invoices/expenses",
-          //   element: <PharmacyExpenseInvoices />,
-          // },
+          {
+            path: "/pharmacy/warehouses/:warehouseId/medicines",
+            element: <PharmacyWarehouseMedicines />,
+          },
+          {
+            path: "/pharmacy/cart",
+            element: <PharmacyCart />,
+          },
+          {
+            path: "/pharmacy/invoices/sales",
+            element: <PharmacySalesInvoices />,
+          },
+          {
+            path: "/pharmacy/invoices/sales/:invoiceId",
+            element: <PharmacySalesInvoiceDetails />,
+          },
+          {
+            path: "/pharmacy/sales-cart",
+            element: <PharmacySalesCart />,
+          },
+          {
+            path: "/pharmacy/invoices/feedback",
+            element: <PharmacyFeedbackInvoices />,
+          },
+          {
+            path: "/pharmacy/invoices/feedback/:invoiceId",
+            element: <PharmacyFeedbackInvoiceDetails />,
+          },
+          {
+            path: "/pharmacy/invoices/expenses",
+            element: <PharmacyExpenseInvoices />,
+          },
+          {
+            path: "/pharmacy/invoices/expenses/:invoiceId",
+            element: <PharmacyExpenseInvoiceDetails />,
+          },
         ],
       },
 
-      { path: "*", element: <RoleHomeRedirect /> },
+      // { path: "*", element: <RoleHomeRedirect /> },
     ],
   },
 ]);

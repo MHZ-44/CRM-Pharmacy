@@ -6,10 +6,10 @@ export default function WarehouseHomePage() {
       
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-blue-800 dark:text-blue-200">
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
           Warehouse Dashboard
         </h1>
-        <p className="text-blue-600 text-sm mt-1 dark:text-blue-300">
+        <p className="text-slate-600 text-sm mt-1 dark:text-slate-300">
           Overview of your warehouse activity
         </p>
       </div>
@@ -44,14 +44,14 @@ export default function WarehouseHomePage() {
 
       {/* RECENT ORDERS TABLE */}
       <div className="mt-10 rounded-2xl border border-slate-200 bg-white p-6 shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:shadow-none">
-        <h2 className="text-xl font-semibold text-blue-800 mb-4 dark:text-blue-200">
+        <h2 className="text-xl font-semibold text-slate-900 mb-4 dark:text-slate-100">
           Recent Orders
         </h2>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-blue-50 text-blue-700 text-sm dark:bg-slate-800 dark:text-blue-200">
+              <tr className="bg-blue-50 text-slate-700 text-sm dark:bg-slate-800 dark:text-slate-100">
                 <th className="p-3">Order ID</th>
                 <th className="p-3">Pharmacy</th>
                 <th className="p-3">Date</th>

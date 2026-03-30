@@ -78,6 +78,13 @@ export function AppSidebar() {
   const role = getRoleFromAuthToken() ?? getStoredRole() ?? DEFAULT_ROLE;
   const sidebarItems = sidebarItemsByRole[role];
   const isPharmacy = role === "pharmacies";
+  const isWarehouse = role === "warehouse";
+  const isWarehouseRoute = location.pathname.startsWith("/warehouse");
+  const useWarehouseTheme = isWarehouse || isWarehouseRoute;
+  const menuItemClass =
+    "!text-slate-900 hover:bg-blue-50 hover:!text-blue-800 dark:!text-white dark:hover:bg-white/10 dark:hover:!text-blue-200 data-[active=true]:bg-blue-100 data-[active=true]:!text-blue-800 data-[active=true]:font-semibold dark:data-[active=true]:bg-blue-500/20 dark:data-[active=true]:!text-blue-200";
+  const subMenuItemClass =
+    "text-slate-900 hover:bg-blue-50 hover:text-blue-800 dark:text-white/80 dark:hover:bg-white/10 dark:hover:text-blue-200 data-[active=true]:bg-blue-100 data-[active=true]:text-blue-800 dark:data-[active=true]:bg-blue-500/20 dark:data-[active=true]:text-blue-200";
   const pharmacyItems: SidebarItem[] = [
     { label: "Warehouses", to: "/pharmacy/warehouses", icon: LuWarehouse },
   ];
@@ -101,7 +108,9 @@ export function AppSidebar() {
         expandedByHoverRef.current = false;
         setOpen(false);
       }}
-      className="top-16 h-[calc(100svh-4rem)] border-r border-black/5 shadow-none backdrop-blur transition-colors duration-500 dark:border-white/10 [&_[data-slot=sidebar-inner]]:!bg-gradient-to-b [&_[data-slot=sidebar-inner]]:from-white/80 [&_[data-slot=sidebar-inner]]:via-white/60 [&_[data-slot=sidebar-inner]]:to-white/40 dark:[&_[data-slot=sidebar-inner]]:from-gray-900/80 dark:[&_[data-slot=sidebar-inner]]:via-gray-900/60 dark:[&_[data-slot=sidebar-inner]]:to-gray-900/40"
+      className={`top-16 h-[calc(100svh-4rem)] border-r border-black/5 shadow-none backdrop-blur transition-colors duration-500 dark:border-white/10 [&_[data-slot=sidebar-inner]]:!bg-gradient-to-b [&_[data-slot=sidebar-inner]]:from-white/80 [&_[data-slot=sidebar-inner]]:via-white/60 [&_[data-slot=sidebar-inner]]:to-white/40 dark:[&_[data-slot=sidebar-inner]]:from-slate-950/90 dark:[&_[data-slot=sidebar-inner]]:via-slate-950/70 dark:[&_[data-slot=sidebar-inner]]:to-slate-950/60 ${
+        isWarehouse ? "text-slate-900 dark:text-white" : ""
+      }`}
     >
       {isPharmacy ? (
         <SidebarContent>
@@ -114,12 +123,7 @@ export function AppSidebar() {
                   location.pathname === "/" ||
                   location.pathname === "/pharmacy/invoices/sales"
                 }
-                className={`text-base [&>svg]:size-5 ${
-                  location.pathname === "/" ||
-                  location.pathname === "/pharmacy/invoices/sales"
-                    ? "bg-blue-200 text-blue-800 font-semibold"
-                    : "text-blue-700 hover:bg-blue-100"
-                }`}
+                className={`text-base [&>svg]:size-5 ${menuItemClass}`}
               >
                 <NavLink to="/">
                   <FiShoppingCart />
@@ -133,7 +137,7 @@ export function AppSidebar() {
                   <SidebarMenuSubButton
                     asChild
                     isActive={location.pathname === "/pharmacy/invoices/sales"}
-                    className="text-blue-700"
+                    className={subMenuItemClass}
                   >
                     <NavLink to="/pharmacy/invoices/sales">
                       <MdOutlineReceipt />
@@ -148,11 +152,7 @@ export function AppSidebar() {
                 asChild
                 size="lg"
                 isActive={location.pathname === "/pharmacy/invoices/feedback"}
-                className={`text-base [&>svg]:size-5 ${
-                  location.pathname === "/pharmacy/invoices/feedback"
-                    ? "bg-blue-200 text-blue-800 font-semibold"
-                    : "text-blue-700 hover:bg-blue-100"
-                }`}
+                className={`text-base [&>svg]:size-5 ${menuItemClass}`}
               >
                 <NavLink to="/pharmacy/invoices/feedback">
                   <MdOutlineRateReview />
@@ -167,11 +167,7 @@ export function AppSidebar() {
                 asChild
                 size="lg"
                 isActive={location.pathname === "/pharmacy/invoices/expenses"}
-                className={`text-base [&>svg]:size-5 ${
-                  location.pathname === "/pharmacy/invoices/expenses"
-                    ? "bg-blue-200 text-blue-800 font-semibold"
-                    : "text-blue-700 hover:bg-blue-100"
-                }`}
+                className={`text-base [&>svg]:size-5 ${menuItemClass}`}
               >
                 <NavLink to="/pharmacy/invoices/expenses">
                   <MdOutlineReceiptLong />
@@ -191,13 +187,7 @@ export function AppSidebar() {
                   location.pathname.startsWith("/pharmacy/low-stock") ||
                   location.pathname.startsWith("/pharmacy/out-of-stock")
                 }
-                className={`text-base [&>svg]:size-5 ${
-                  location.pathname === "/pharmacy/medicines" ||
-                  location.pathname.startsWith("/pharmacy/low-stock") ||
-                  location.pathname.startsWith("/pharmacy/out-of-stock")
-                    ? "bg-blue-200 text-blue-800 font-semibold"
-                    : "text-blue-700 hover:bg-blue-100"
-                }`}
+                className={`text-base [&>svg]:size-5 ${menuItemClass}`}
               >
                 <NavLink to="/pharmacy/medicines">
                   <MdOutlineLocalPharmacy />
@@ -211,7 +201,7 @@ export function AppSidebar() {
                   <SidebarMenuSubButton
                     asChild
                     isActive={location.pathname.startsWith("/pharmacy/low-stock")}
-                    className="text-blue-700"
+                    className={subMenuItemClass}
                   >
                     <NavLink to="/pharmacy/low-stock">
                       <FiAlertTriangle />
@@ -225,7 +215,7 @@ export function AppSidebar() {
                     isActive={location.pathname.startsWith(
                       "/pharmacy/out-of-stock",
                     )}
-                    className="text-blue-700"
+                    className={subMenuItemClass}
                   >
                     <NavLink to="/pharmacy/out-of-stock">
                       <FiSlash />
@@ -237,7 +227,7 @@ export function AppSidebar() {
                   <SidebarMenuSubButton
                     asChild
                     isActive={location.pathname === "/pharmacy/medicines/create"}
-                    className="text-blue-700"
+                    className={subMenuItemClass}
                   >
                     <NavLink to="/pharmacy/medicines/create">
                       <FiPlusCircle />
@@ -261,11 +251,7 @@ export function AppSidebar() {
                     asChild
                     size="lg"
                     isActive={isActive}
-                    className={`text-base [&>svg]:size-5 ${
-                      isActive
-                        ? "bg-blue-200 text-blue-800 font-semibold"
-                        : "text-blue-700 hover:bg-blue-100"
-                    }`}
+                    className={`text-base [&>svg]:size-5 ${menuItemClass}`}
                   >
                     <NavLink to={item.to}>
                       <Icon />
@@ -281,7 +267,7 @@ export function AppSidebar() {
                           <SidebarMenuSubButton
                             size="md"
                             aria-disabled
-                            className="text-blue-700/60"
+                            className="text-slate-400 dark:text-white/40"
                           >
                             <FiShoppingCart />
                             <span>Cart</span>
@@ -290,7 +276,7 @@ export function AppSidebar() {
                           <SidebarMenuSubButton
                             asChild
                             isActive={location.pathname === "/pharmacy/cart"}
-                            className="text-blue-700"
+                            className={subMenuItemClass}
                           >
                             <NavLink to="/pharmacy/cart">
                               <FiShoppingCart />
@@ -313,6 +299,7 @@ export function AppSidebar() {
               const isActive =
                 location.pathname === item.to ||
                 location.pathname.startsWith(item.to + "/");
+              const baseClass = menuItemClass;
 
               const Icon = item.icon;
 
@@ -322,11 +309,7 @@ export function AppSidebar() {
                     asChild
                     size="lg"
                     isActive={isActive}
-                    className={`text-base [&>svg]:size-5 ${
-                      isActive
-                        ? "bg-blue-200 text-blue-800 font-semibold"
-                        : "text-blue-700 hover:bg-blue-100"
-                    }`}
+                    className={`text-base [&>svg]:size-5 ${baseClass}`}
                   >
                     <NavLink to={item.to}>
                       <Icon />
@@ -347,7 +330,7 @@ export function AppSidebar() {
           asChild
           size="lg"
           isActive={isSettingsActive}
-          className={isPharmacy ? "text-base" : undefined}
+          className={`text-base ${menuItemClass}`}
         >
           <NavLink to="/settings">
             <MdOutlineSettings />

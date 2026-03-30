@@ -4,13 +4,13 @@ import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import dayjs from "dayjs";
 
-export const useGetSalesInvoices = () => {
+export const useGetFeedbackInvoices = () => {
   const [searchParams] = useSearchParams();
 
   const paramsString = searchParams.toString();
   const url = paramsString
-    ? `/api/pharmacy/sales-invoices?${paramsString}`
-    : "/api/pharmacy/sales-invoices";
+    ? `/api/pharmacy/sales-invoices/with-feedback?${paramsString}`
+    : "/api/pharmacy/sales-invoices/with-feedback";
 
   const query = useQuery<
     SalesInvoice[],
@@ -22,6 +22,7 @@ export const useGetSalesInvoices = () => {
       discount_percent: string;
       quantity: number;
       created_date: string;
+      feedback: string;
     }[]
   >({
     queryKey: ["sCart", paramsString],
@@ -48,6 +49,7 @@ export const useGetSalesInvoices = () => {
           paid_total: invoice.paid_total,
           discount_percent: invoice.discount_percent,
           quantity: totalQuantity,
+          feedback: invoice.feedback,
           created_date: dayjs(invoice.created_at).format("YYYY-MM-DD"),
         };
       });

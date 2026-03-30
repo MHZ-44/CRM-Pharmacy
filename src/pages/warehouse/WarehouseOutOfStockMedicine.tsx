@@ -50,7 +50,7 @@ export default function WarehouseOutOfStockMedicine() {
   }, [outOfStockMedicines, searchTerm]);
 
   return (
-    <div className="min-h-screen space-y-8 p-8 text-[18px] text-gray-900 bg-gradient-to-br from-white via-slate-200 to-blue-100 dark:from-gray-900 dark:via-slate-900 dark:to-blue-950 dark:text-slate-100">
+    <div className="min-h-screen space-y-8 p-8 text-[18px] text-slate-900 bg-gradient-to-br from-white via-slate-200 to-blue-100 dark:from-gray-900 dark:via-slate-900 dark:to-blue-950 dark:text-slate-100">
 
       <div className="flex items-center justify-between">
         <div>
@@ -91,7 +91,7 @@ export default function WarehouseOutOfStockMedicine() {
 
         <Table className="min-w-[900px] border-collapse text-base">
 
-          <TableHeader className="bg-blue-100 text-lg dark:bg-slate-800">
+        <TableHeader className="bg-blue-100 text-lg dark:bg-slate-800">
             <TableRow>
               <TableHead className="p-4 text-left">Name</TableHead>
               <TableHead className="p-4 text-left">Strength</TableHead>
@@ -106,7 +106,10 @@ export default function WarehouseOutOfStockMedicine() {
 
             {filteredMedicines.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="p-8 text-center text-gray-500">
+                <TableCell
+                  colSpan={6}
+                  className="p-8 text-center text-gray-500 dark:text-slate-400"
+                >
                   No out of stock medicines found
                 </TableCell>
               </TableRow>

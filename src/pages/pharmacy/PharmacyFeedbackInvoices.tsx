@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { FiSearch } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -8,17 +9,34 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useGetFeedbackInvoices } from "@/hooks/pharmacy/useGetFeedbackInvoices";
 
 export default function PharmacyFeedbackInvoices() {
   const [searchTerm, setSearchTerm] = useState("");
-  const invoices = useMemo(() => [], []);
+  const [selectedInvoiceId, setSelectedInvoiceId] = useState<number | null>(
+    null,
+  );
+  const navigate = useNavigate();
+  const { data, isLoading, isError, error } = useGetFeedbackInvoices();
+  const invoices = useMemo(() => data ?? [], [data]);
 
   const filteredInvoices = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
     if (!term) return invoices;
 
     return invoices.filter((invoice) =>
-      String(invoice).toLowerCase().includes(term),
+      [
+        invoice.id,
+        invoice.created_date,
+        invoice.total_price,
+        invoice.paid_total,
+        invoice.discount_percent,
+        invoice.feedback,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase()
+        .includes(term),
     );
   }, [invoices, searchTerm]);
 
@@ -53,18 +71,38 @@ export default function PharmacyFeedbackInvoices() {
           <TableHeader className="bg-blue-100 text-lg dark:bg-slate-800">
             <TableRow>
               <TableHead className="p-4 text-left">Invoice #</TableHead>
-              <TableHead className="p-4 text-left">Customer</TableHead>
               <TableHead className="p-4 text-left">Date</TableHead>
+              <TableHead className="p-4 text-left">Total</TableHead>
+              <TableHead className="p-4 text-left">Paid</TableHead>
+              <TableHead className="p-4 text-left">Discount %</TableHead>
               <TableHead className="p-4 text-left">Feedback</TableHead>
-              <TableHead className="p-4 text-left">Status</TableHead>
+              <TableHead className="p-4 text-left">Items Qty</TableHead>
             </TableRow>
           </TableHeader>
 
           <TableBody>
-            {filteredInvoices.length === 0 ? (
+            {isLoading ? (
               <TableRow>
                 <TableCell
-                  colSpan={5}
+                  colSpan={7}
+                  className="p-8 text-center text-gray-500 dark:text-slate-400"
+                >
+                  Loading feedback invoices...
+                </TableCell>
+              </TableRow>
+            ) : isError ? (
+              <TableRow>
+                <TableCell
+                  colSpan={7}
+                  className="p-8 text-center text-red-500 dark:text-red-400"
+                >
+                  {error?.message || "Failed to load feedback invoices."}
+                </TableCell>
+              </TableRow>
+            ) : filteredInvoices.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={7}
                   className="p-8 text-center text-gray-500 dark:text-slate-400"
                 >
                   No feedback invoices yet.
@@ -74,17 +112,39 @@ export default function PharmacyFeedbackInvoices() {
               filteredInvoices.map((invoice, index) => (
                 <TableRow
                   key={index}
+                  onClick={() => {
+                    setSelectedInvoiceId(invoice.id);
+                    navigate(`/pharmacy/invoices/feedback/${invoice.id}`);
+                  }}
                   className={`transition hover:bg-blue-50 dark:hover:bg-slate-800/70 ${
-                    index % 2 === 0
-                      ? "bg-white dark:bg-slate-900"
-                      : "bg-gray-100 dark:bg-slate-900/60"
+                    selectedInvoiceId === invoice.id
+                      ? "bg-blue-100 dark:bg-slate-800"
+                      : index % 2 === 0
+                        ? "bg-white dark:bg-slate-900"
+                        : "bg-gray-100 dark:bg-slate-900/60"
                   }`}
                 >
-                  <TableCell className="p-4">—</TableCell>
-                  <TableCell className="p-4">—</TableCell>
-                  <TableCell className="p-4">—</TableCell>
-                  <TableCell className="p-4">—</TableCell>
-                  <TableCell className="p-4">—</TableCell>
+                  <TableCell className="p-4 font-semibold">
+                    {invoice.id ?? "—"}
+                  </TableCell>
+                  <TableCell className="p-4">
+                    {invoice.created_date ?? "—"}
+                  </TableCell>
+                  <TableCell className="p-4">
+                    {invoice.total_price ?? "—"}
+                  </TableCell>
+                  <TableCell className="p-4">
+                    {invoice.paid_total ?? "—"}
+                  </TableCell>
+                  <TableCell className="p-4">
+                    {invoice.discount_percent ?? "—"}%
+                  </TableCell>
+                  <TableCell className="p-4">
+                    {invoice.feedback ?? "—"}
+                  </TableCell>
+                  <TableCell className="p-4 font-semibold">
+                    {invoice.quantity ?? 0}
+                  </TableCell>
                 </TableRow>
               ))
             )}

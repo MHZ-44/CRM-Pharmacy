@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { FiSearch } from "react-icons/fi";
+import { useNavigate } from "react-router-dom";
 import {
   Table,
   TableBody,
@@ -12,6 +13,10 @@ import { useGetSalesInvoices } from "@/hooks/pharmacy/useGetSalesInvoices";
 
 export default function PharmacySalesInvoices() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedInvoiceId, setSelectedInvoiceId] = useState<number | null>(
+    null,
+  );
+  const navigate = useNavigate();
   const { data, isLoading, isError, error } = useGetSalesInvoices();
   const invoices = useMemo(() => data ?? [], [data]);
 
@@ -69,6 +74,7 @@ export default function PharmacySalesInvoices() {
               <TableHead className="p-4 text-left">Paid Amount</TableHead>
               <TableHead className="p-4 text-left">Discount</TableHead>
               <TableHead className="p-4 text-left">Total Quantity</TableHead>
+              <TableHead className="p-4 text-left">Created Date</TableHead>
             </TableRow>
           </TableHeader>
 
@@ -104,10 +110,16 @@ export default function PharmacySalesInvoices() {
               filteredInvoices.map((invoice, index) => (
                 <TableRow
                   key={index}
+                  onClick={() => {
+                    setSelectedInvoiceId(invoice.id);
+                    navigate(`/pharmacy/invoices/sales/${invoice.id}`);
+                  }}
                   className={`transition hover:bg-blue-50 dark:hover:bg-slate-800/70 ${
-                    index % 2 === 0
-                      ? "bg-white dark:bg-slate-900"
-                      : "bg-gray-100 dark:bg-slate-900/60"
+                    selectedInvoiceId === invoice.id
+                      ? "bg-blue-100 dark:bg-slate-800"
+                      : index % 2 === 0
+                        ? "bg-white dark:bg-slate-900"
+                        : "bg-gray-100 dark:bg-slate-900/60"
                   }`}
                 >
                   <TableCell className="p-4 font-semibold">
@@ -116,10 +128,15 @@ export default function PharmacySalesInvoices() {
                   <TableCell className="p-4">{invoice.total_price}</TableCell>
                   <TableCell className="p-4">{invoice.paid_total}</TableCell>
                   <TableCell className="p-4">
-                    {invoice.discount_percent ? `${invoice.discount_percent}%` : "—"}
+                    {invoice.discount_percent
+                      ? `${invoice.discount_percent}%`
+                      : "—"}
                   </TableCell>
                   <TableCell className="p-4 font-semibold">
                     {invoice.quantity}
+                  </TableCell>
+                  <TableCell className="p-4 font-semibold">
+                    {invoice.created_date}
                   </TableCell>
                 </TableRow>
               ))

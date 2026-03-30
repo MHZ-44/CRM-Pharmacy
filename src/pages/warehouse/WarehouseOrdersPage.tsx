@@ -68,10 +68,10 @@ export default function WarehouseOrders() {
   return (
     <div className="min-h-screen p-8 space-y-8 bg-gradient-to-br from-white via-slate-200 to-blue-100 text-slate-900 dark:from-gray-900 dark:via-slate-900 dark:to-blue-950 dark:text-slate-100">
       <div>
-        <h1 className="text-3xl font-bold text-blue-800 dark:text-blue-200">
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-slate-100">
           Warehouse Orders
         </h1>
-        <p className="text-blue-600 text-sm mt-1 dark:text-blue-300">
+        <p className="text-slate-600 text-sm mt-1 dark:text-slate-300">
           Review and send pending pharmacy orders
         </p>
       </div>
@@ -86,7 +86,7 @@ export default function WarehouseOrders() {
               className="bg-white p-6 rounded-2xl border border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 hover:scale-[1.02] space-y-4 cursor-pointer dark:bg-slate-900 dark:border-slate-800 dark:shadow-none"
             >
               <div className="flex justify-between items-center">
-                <h2 className="text-lg font-semibold text-blue-700 dark:text-blue-200">
+                <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
                   {order.pharmacyName}
                 </h2>
 
