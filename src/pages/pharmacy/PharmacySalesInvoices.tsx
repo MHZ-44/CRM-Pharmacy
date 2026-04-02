@@ -23,20 +23,26 @@ export default function PharmacySalesInvoices() {
   const filteredInvoices = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
     if (!term) return invoices;
+    const dateTerm = normalizeDateSearch(term);
 
-    return invoices.filter((invoice) =>
-      [
+    return invoices.filter((invoice) => {
+      const haystack = [
         invoice.id,
         invoice.total_price,
         invoice.paid_total,
         invoice.discount_percent,
         invoice.quantity,
+        invoice.created_date,
       ]
         .filter(Boolean)
         .join(" ")
-        .toLowerCase()
-        .includes(term),
-    );
+        .toLowerCase();
+
+      return (
+        haystack.includes(term) ||
+        (dateTerm ? haystack.includes(dateTerm) : false)
+      );
+    });
   }, [invoices, searchTerm]);
 
   return (
@@ -82,7 +88,7 @@ export default function PharmacySalesInvoices() {
             {isLoading ? (
               <TableRow>
                 <TableCell
-                  colSpan={5}
+                  colSpan={6}
                   className="p-8 text-center text-gray-500 dark:text-slate-400"
                 >
                   Loading sales invoices...
@@ -91,7 +97,7 @@ export default function PharmacySalesInvoices() {
             ) : isError ? (
               <TableRow>
                 <TableCell
-                  colSpan={5}
+                  colSpan={6}
                   className="p-8 text-center text-red-500 dark:text-red-400"
                 >
                   {error?.message || "Failed to load sales invoices."}
@@ -100,7 +106,7 @@ export default function PharmacySalesInvoices() {
             ) : filteredInvoices.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={5}
+                  colSpan={6}
                   className="p-8 text-center text-gray-500 dark:text-slate-400"
                 >
                   No sales invoices yet.
@@ -147,3 +153,19 @@ export default function PharmacySalesInvoices() {
     </div>
   );
 }
+
+const normalizeDateSearch = (term: string) => {
+  const dashMatch = term.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if (dashMatch) {
+    const [, year, month, day] = dashMatch;
+    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+  }
+
+  const slashMatch = term.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+  if (slashMatch) {
+    const [, day, month, year] = slashMatch;
+    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+  }
+
+  return "";
+};

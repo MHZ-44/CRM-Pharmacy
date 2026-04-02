@@ -184,7 +184,7 @@ function PharmacyAddMedicine() {
         setCostPrice("");
         setQuantity("");
         setBarcode("");
-        navigate("/");
+        navigate("/pharmacy/medicines");
       },
       onError: (error) => {
         toast.error(getApiErrorMessage(error, "Failed to save medicine."));

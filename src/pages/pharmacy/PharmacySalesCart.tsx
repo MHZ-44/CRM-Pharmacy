@@ -206,6 +206,7 @@ export default function PharmacySalesCart() {
         onSuccess: () => {
           toast.success("Sale confirmed.");
           setConfirmDialogOpen(false);
+          setShowScanner(false);
         },
         onError: (mutationError) => {
           const responseData = (
@@ -245,6 +246,7 @@ export default function PharmacySalesCart() {
       onSuccess: () => {
         toast.success("Sale confirmed.");
         setConfirmDialogOpen(false);
+        setShowScanner(false);
       },
       onError: (mutationError) => {
         toast.error(

@@ -28,11 +28,15 @@ import PharmacyFeedbackInvoiceDetails from "./pages/pharmacy/PharmacyFeedbackInv
 import PharmacyExpenseInvoices from "./pages/pharmacy/PharmacyExpenseInvoices";
 import PharmacyExpenseInvoiceDetails from "./pages/pharmacy/PharmacyExpenseInvoiceDetails";
 import WarehouseHomePage from "./pages/warehouse/WarehouseHomePage";
-import WarehouseLowStockMedicine from "./pages/warehouse/WarehouseLowStockMedicine";
-import WarehouseOutOfStockMedicine from "./pages/warehouse/WarehouseOutOfStockMedicine";
+import WarehouseAddMedicine from "./pages/warehouse/WarehouseAddMedicinePage";
 import WarehouseInventory from "./pages/warehouse/WarehouseInventoryPage";
-import WarehouseAddMedicine from "./pages/warehouse/WarehouseAddMedicine";
 import WarehouseOrders from "./pages/warehouse/WarehouseOrdersPage";
+import WarehouseLowStockMedicine from "./pages/warehouse/WarehouseLowStockMedicinePage";
+import WarehouseOutOfStockMedicine from "./pages/warehouse/WarehouseOutOfStockMedicinePage";
+import WarehouseCreateExpenseInvoice from "./pages/warehouse/WarehouseCreateExpenseInvoices";
+import WarehouseInvoices from "./pages/warehouse/WarehouseInvoices";
+
+import WarehousePendingInvoices from "./pages/warehouse/WarehousePendingInvoices";
 
 const router = createBrowserRouter([
   {
@@ -42,38 +46,50 @@ const router = createBrowserRouter([
       // { index: true, element: <RoleHomeRedirect /> },
       // { path: "settings", element: <ProfilePage /> },
 
-      // {
-      // element: <RequireRole allowed={["superadmin"]} />,
-      //   children: [
-      //     { path: "home", element: <SuperAdminHomePage /> },
-      //     { path: "pharmacies", element: <SuperAdminPharmacies /> },
-      //     { path: "pharmacies/create", element: <SuperAdminAddPharmacy /> },
-      //     { path: "warehouses", element: <SuperAdminWarehouses /> },
-      //     { path: "warehouses/create", element: <SuperAdminAddWarehouse /> },
-      //     { path: "admins", element: <SuperAdminAdmins /> },
-      //     { path: "admins/create", element: <SuperAdminAddAdmin /> },
-      //   ],
-      // },
+      //{
+      //element: <RequireRole allowed={["superadmin"]} />,
+      //children: [
+      //{ path: "home", element: <SuperAdminHomePage /> },
+      //{ path: "pharmacies", element: <SuperAdminPharmacies /> },
+      //{ path: "pharmacies/create", element: <SuperAdminAddPharmacy /> },
+      //{ path: "warehouses", element: <SuperAdminWarehouses /> },
+      //{ path: "warehouses/create", element: <SuperAdminAddWarehouse /> },
+      //{ path: "admins", element: <SuperAdminAdmins /> },
+      //{ path: "admins/create", element: <SuperAdminAddAdmin /> },
+      //],
+      //},
 
-      // {
-      //   element: <RequireRole allowed={["admin"]} />,
-      //   children: [
-      //     { path: "home", element: <SuperAdminHomePage /> },
-      //     { path: "pharmacies", element: <AdminPharmacies /> },
-      //     { path: "pharmacies/create", element: <AdminAddPharmacy /> },
-      //     { path: "warehouses", element: <AdminWarehouses /> },
-      //     { path: "warehouses/create", element: <AdminAddWarehouse /> },
-      //   ],
-      // },
+      //{
+      //element: <RequireRole allowed={["admin"]} />,
+      //children: [
+      // { path: "home", element: <SuperAdminHomePage /> },
+      // { path: "pharmacies", element: <AdminPharmacies /> },
+      //  { path: "pharmacies/create", element: <AdminAddPharmacy /> },
+      // { path: "warehouses", element: <AdminWarehouses /> },
+      //{ path: "warehouses/create", element: <AdminAddWarehouse /> },
+      //],
+      //},
 
-      // {
-      //   element: <RequireRole allowed={["warehouse"]} />,
-      //   children: [
-      //     { path: "warehouse/home", element: <WarehouseHomePage /> },
-      //     { path: "warehouse/inventory", element: <WarehouseInventoryPage /> },
-      //     { path: "warehouse/orders", element: <WarehouseOrdersPage /> },
-      //   ],
-      // },
+      {
+        element: <RequireRole allowed={["warehouse"]} />,
+        children: [
+          { path: "/warehouse/home", element: <WarehouseHomePage /> },
+          { path: "/warehouse/inventory", element: <WarehouseInventory /> },
+          { path: "/warehouse/orders", element: <WarehouseOrders /> },
+          {
+            path: "/warehouse/add-medicine",
+            element: <WarehouseAddMedicine />,
+          },
+          {
+            path: "/warehouse/low-stock",
+            element: <WarehouseLowStockMedicine />,
+          },
+          {
+            path: "/warehouse/out-of-stock",
+            element: <WarehouseOutOfStockMedicine />,
+          },
+        ],
+      },
 
       {
         element: <RequireRole allowed={["pharmacies"]} />,

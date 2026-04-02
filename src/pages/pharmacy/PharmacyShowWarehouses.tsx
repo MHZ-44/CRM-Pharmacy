@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useGetWarehouses } from "@/hooks/superAdmin/useGetWarehouses";
+import { useGetWarehouses } from "@/hooks/pharmacy/useGetWarehouses";
 import { useNavigate } from "react-router-dom";
 
 function PharmacyShowWarehouses() {
@@ -22,21 +22,25 @@ function PharmacyShowWarehouses() {
   const filteredWarehouses = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
     if (!term) return warehouses;
+    const dateTerm = normalizeDateSearch(term);
 
-    return warehouses.filter((warehouse) =>
-      [
-        warehouse.warehouseName,
-        warehouse.ownerName,
-        warehouse.email,
-        warehouse.phone,
-        warehouse.regionName,
-        warehouse.adminAddIt,
-        warehouse.addedDate,
+    return warehouses.filter((warehouse) => {
+      const haystack = [
+        warehouse.warehouseName ?? "",
+        warehouse.ownerName ?? "",
+        warehouse.email ?? "",
+        warehouse.phone ?? "",
+        warehouse.regionName ?? "",
+        warehouse.addedDate ?? "",
       ]
         .join(" ")
-        .toLowerCase()
-        .includes(term),
-    );
+        .toLowerCase();
+
+      return (
+        haystack.includes(term) ||
+        (dateTerm ? haystack.includes(dateTerm) : false)
+      );
+    });
   }, [searchTerm, warehouses]);
 
   return (
@@ -67,7 +71,6 @@ function PharmacyShowWarehouses() {
               <TableHead className="p-4 text-left">Email</TableHead>
               <TableHead className="p-4 text-left">Number</TableHead>
               <TableHead className="p-4 text-left">Location</TableHead>
-              <TableHead className="p-4 text-left">Admin Add it</TableHead>
               <TableHead className="p-4 text-left">Added Date</TableHead>
             </TableRow>
           </TableHeader>
@@ -124,7 +127,6 @@ function PharmacyShowWarehouses() {
                   <TableCell className="p-4">{warehouse.email}</TableCell>
                   <TableCell className="p-4">{warehouse.phone}</TableCell>
                   <TableCell className="p-4">{warehouse.regionName}</TableCell>
-                  <TableCell className="p-4">{warehouse.adminAddIt}</TableCell>
                   <TableCell className="p-4">{warehouse.addedDate}</TableCell>
                 </TableRow>
               ))
@@ -137,3 +139,19 @@ function PharmacyShowWarehouses() {
 }
 
 export default PharmacyShowWarehouses;
+
+const normalizeDateSearch = (term: string) => {
+  const dashMatch = term.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if (dashMatch) {
+    const [, year, month, day] = dashMatch;
+    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+  }
+
+  const slashMatch = term.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+  if (slashMatch) {
+    const [, day, month, year] = slashMatch;
+    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+  }
+
+  return "";
+};

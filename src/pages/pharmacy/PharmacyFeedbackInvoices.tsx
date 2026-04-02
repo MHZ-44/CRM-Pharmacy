@@ -23,9 +23,10 @@ export default function PharmacyFeedbackInvoices() {
   const filteredInvoices = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
     if (!term) return invoices;
+    const dateTerm = normalizeDateSearch(term);
 
-    return invoices.filter((invoice) =>
-      [
+    return invoices.filter((invoice) => {
+      const haystack = [
         invoice.id,
         invoice.created_date,
         invoice.total_price,
@@ -35,9 +36,13 @@ export default function PharmacyFeedbackInvoices() {
       ]
         .filter(Boolean)
         .join(" ")
-        .toLowerCase()
-        .includes(term),
-    );
+        .toLowerCase();
+
+      return (
+        haystack.includes(term) ||
+        (dateTerm ? haystack.includes(dateTerm) : false)
+      );
+    });
   }, [invoices, searchTerm]);
 
   return (
@@ -154,3 +159,19 @@ export default function PharmacyFeedbackInvoices() {
     </div>
   );
 }
+
+const normalizeDateSearch = (term: string) => {
+  const dashMatch = term.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+  if (dashMatch) {
+    const [, year, month, day] = dashMatch;
+    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+  }
+
+  const slashMatch = term.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+  if (slashMatch) {
+    const [, day, month, year] = slashMatch;
+    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+  }
+
+  return "";
+};
