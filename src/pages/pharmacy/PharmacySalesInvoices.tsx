@@ -10,6 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useGetSalesInvoices } from "@/hooks/pharmacy/useGetSalesInvoices";
+import { normalizeDateSearch } from "@/lib/normalizeDateSearch";
 
 export default function PharmacySalesInvoices() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -120,7 +121,7 @@ export default function PharmacySalesInvoices() {
                     setSelectedInvoiceId(invoice.id);
                     navigate(`/pharmacy/invoices/sales/${invoice.id}`);
                   }}
-                  className={`transition hover:bg-blue-50 dark:hover:bg-slate-800/70 ${
+                  className={`transition hover:bg-[rgba(15,143,139,0.08)] dark:hover:bg-slate-800/70 ${
                     selectedInvoiceId === invoice.id
                       ? "bg-blue-100 dark:bg-slate-800"
                       : index % 2 === 0
@@ -153,19 +154,3 @@ export default function PharmacySalesInvoices() {
     </div>
   );
 }
-
-const normalizeDateSearch = (term: string) => {
-  const dashMatch = term.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
-  if (dashMatch) {
-    const [, year, month, day] = dashMatch;
-    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-  }
-
-  const slashMatch = term.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
-  if (slashMatch) {
-    const [, day, month, year] = slashMatch;
-    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-  }
-
-  return "";
-};

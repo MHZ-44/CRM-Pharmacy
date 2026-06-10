@@ -30,16 +30,16 @@ function AdminWarehouses() {
           <Link to={"create"}>
             <Button
               size="sm"
-              className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-400 dark:hover:bg-blue-500"
+              className="bg-[#0f8f8b] text-white hover:bg-[#0c7d79] dark:bg-[#0f8f8b] dark:hover:bg-[#0c7d79]"
             >
               Add Warehouse
             </Button>
           </Link>
         </div>
 
-        <div className="w-full rounded-lg border bg-white dark:bg-gray-900 shadow-lg">
+        <div className="w-full overflow-hidden rounded-lg border border-[#0f8f8b]/20 bg-white shadow-lg dark:border-[#0f8f8b]/30 dark:bg-gray-900">
           <Table className="min-w-[1100px] text-base">
-            <TableCaption className="px-4 pb-4 text-left text-blue-700 dark:text-blue-300">
+            <TableCaption className="px-4 pb-4 text-left text-[#0f8f8b] dark:text-[#49c7c2]">
               {isLoading
                 ? "Loading warehouses..."
                 : isError
@@ -48,27 +48,27 @@ function AdminWarehouses() {
                     ? "No warehouses found"
                     : `Showing ${warehouses.length} warehouse${warehouses.length === 1 ? "" : "s"}`}
             </TableCaption>
-            <TableHeader className="bg-blue-100 dark:bg-gray-800">
+            <TableHeader className="bg-[#0f8f8b]/10 dark:bg-[#0f8f8b]/20">
               <TableRow className="hover:bg-transparent data-[state=selected]:bg-transparent">
-                <TableHead className="w-[240px] px-6 py-4 text-base text-blue-800 dark:text-blue-300">
+                <TableHead className="w-[240px] px-6 py-4 text-base text-[#0f8f8b] dark:text-[#49c7c2]">
                   Warehouse Name
                 </TableHead>
-                <TableHead className="px-6 py-4 text-base text-blue-800 dark:text-blue-300">
+                <TableHead className="px-6 py-4 text-base text-[#0f8f8b] dark:text-[#49c7c2]">
                   Owner Name
                 </TableHead>
-                <TableHead className="px-6 py-4 text-base text-blue-800 dark:text-blue-300">
+                <TableHead className="px-6 py-4 text-base text-[#0f8f8b] dark:text-[#49c7c2]">
                   Email
                 </TableHead>
-                <TableHead className="px-6 py-4 text-base text-blue-800 dark:text-blue-300">
+                <TableHead className="px-6 py-4 text-base text-[#0f8f8b] dark:text-[#49c7c2]">
                   Number
                 </TableHead>
-                <TableHead className="px-6 py-4 text-base text-blue-800 dark:text-blue-300">
+                <TableHead className="px-6 py-4 text-base text-[#0f8f8b] dark:text-[#49c7c2]">
                   Location
                 </TableHead>
-                <TableHead className="px-6 py-4 text-base text-blue-800 dark:text-blue-300">
+                <TableHead className="px-6 py-4 text-base text-[#0f8f8b] dark:text-[#49c7c2]">
                   Admin Add it
                 </TableHead>
-                <TableHead className="px-6 py-4 text-right text-base text-blue-800 dark:text-blue-300">
+                <TableHead className="px-6 py-4 text-right text-base text-[#0f8f8b] dark:text-[#49c7c2]">
                   Added Date
                 </TableHead>
               </TableRow>
@@ -105,15 +105,15 @@ function AdminWarehouses() {
                 warehouses.map((warehouse) => (
                   <TableRow
                     key={warehouse.id}
-                    className="hover:bg-transparent data-[state=selected]:bg-transparent"
+                    className="text-slate-800 hover:bg-[#0f8f8b]/5 data-[state=selected]:bg-[#0f8f8b]/10 dark:text-slate-100 dark:hover:bg-[#0f8f8b]/10"
                   >
-                    <TableCell className="px-6 py-4 text-base font-medium">
+                    <TableCell className="px-6 py-4 text-base font-medium text-[#0f8f8b] dark:text-[#49c7c2]">
                       {warehouse.warehouseName}
                     </TableCell>
-                    <TableCell className="px-6 py-4 text-base font-medium">
+                    <TableCell className="px-6 py-4 text-base font-medium text-slate-900 dark:text-slate-100">
                       {warehouse.ownerName}
                     </TableCell>
-                    <TableCell className="px-6 py-4 text-base text-muted-foreground">
+                    <TableCell className="px-6 py-4 text-base text-slate-600 dark:text-slate-300">
                       {warehouse.email}
                     </TableCell>
                     <TableCell className="px-6 py-4 text-base">

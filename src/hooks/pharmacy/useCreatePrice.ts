@@ -8,9 +8,9 @@ export const useCreatePrice = () => {
   const mutation = useMutation<
     { data: string },
     AxiosError<{ error: string }>,
-    { paid_total: number }
+    { paid_total: number; feedback?: string }
   >({
-    mutationFn: (data: { paid_total: number }) =>
+    mutationFn: (data: { paid_total: number; feedback?: string }) =>
       post(`/api/pharmacy/sales-cart/checkout`, data, {
         headers: {
           "Content-Type": "application/json",
@@ -18,6 +18,8 @@ export const useCreatePrice = () => {
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sCart"] });
+      queryClient.invalidateQueries({ queryKey: ["sales-invoices"] });
+      queryClient.invalidateQueries({ queryKey: ["feedback-invoices"] });
     },
   });
   return mutation;

@@ -1,6 +1,6 @@
-import { getLsValue, removeLsValue } from "@/lib";
 import axios, { AxiosError } from "axios";
 import type { ErrorResponse } from "react-router-dom";
+import { clearStoredAuth, getStoredAuthToken } from "@/lib/roles";
 
 const axiosInstance = axios.create({
   baseURL: "http://127.0.0.1:8000",
@@ -8,11 +8,8 @@ const axiosInstance = axios.create({
 });
 
 axiosInstance.interceptors.request.use((config) => {
-  const token =
-    // "2|v7zlveEQ6kGfFHo5WIttqWlh7BrWtrhGoKPZsY6k682f76f7" //admin token
-    "3|p0x8JQWqFyvjKJxyV7Q3INUGhvwfuDmATQTvFw32338c0e6f"; //pharmacy token
-  // "4|OTi3AVBKgy70suIiT1WOAcN7Q98LXFAluWCJ9gs7bdd21723"; //warehouse token
-  // getLsValue("token");
+  const token = getStoredAuthToken();
+
   if (token) {
     config.headers = config.headers ?? {};
     config.headers.Authorization = `Bearer ${token}`;
@@ -28,8 +25,7 @@ axiosInstance.interceptors.response.use(
   (response) => response,
   (error: AxiosError<ErrorResponse>) => {
     if (error.response?.status === 401) {
-      removeLsValue("token");
-      // window.location.assign("/auth/login");
+      clearStoredAuth();
     }
     return Promise.reject(error);
   },

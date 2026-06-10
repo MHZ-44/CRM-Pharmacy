@@ -90,7 +90,7 @@ export default function PharmacyMedicine() {
         <Link to="/pharmacy/medicines/create">
           <Button
             size="sm"
-            className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-400 dark:hover:bg-blue-500"
+            className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-400 dark:hover:bg-[rgba(15,143,139,0.08)]0"
           >
             Add Medicine
           </Button>
@@ -143,7 +143,7 @@ export default function PharmacyMedicine() {
               filteredMedicines.map((medicine, index) => (
                 <TableRow
                   key={medicine.id}
-                  className={`transition hover:bg-blue-50 dark:hover:bg-slate-800/70 ${
+                  className={`transition hover:bg-[rgba(15,143,139,0.08)] dark:hover:bg-slate-800/70 ${
                     index % 2 === 0
                       ? "bg-white dark:bg-slate-900"
                       : "bg-gray-100 dark:bg-slate-900/60"

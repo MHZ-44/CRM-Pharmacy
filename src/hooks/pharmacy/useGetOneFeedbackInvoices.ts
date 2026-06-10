@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import dayjs from "dayjs";
 
 export const useGetOneFeedbackInvoices = (id: string | null | undefined) => {
-  const url = `api/pharmacy/sales-invoices/${id}`;
+  const url = `/api/pharmacy/sales-invoices/with-feedback/${id}`;
 
   const query = useQuery<
     SalesInvoice[],
@@ -26,8 +26,9 @@ export const useGetOneFeedbackInvoices = (id: string | null | undefined) => {
       feedback: string;
     }[]
   >({
-    queryKey: ["sCart"],
+    queryKey: ["feedback-invoices", id],
     queryFn: () => fetcher<SalesInvoice[]>(url),
+    enabled: Boolean(id),
     select: (response) => {
       const salesInvoices = Array.isArray(response)
         ? response

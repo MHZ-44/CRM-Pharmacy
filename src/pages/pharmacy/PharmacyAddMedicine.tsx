@@ -375,7 +375,7 @@ function PharmacyAddMedicine() {
                   <Button
                     type="submit"
                     disabled={isPending}
-                    className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-400 dark:hover:bg-blue-500"
+                    className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-400 dark:hover:bg-[rgba(15,143,139,0.08)]0"
                   >
                     {isPending ? "Submitting..." : "Submit"}
                   </Button>

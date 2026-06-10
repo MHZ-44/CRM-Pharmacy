@@ -157,7 +157,16 @@ export default function BarcodeScanner({
       cancelled = true;
       controls?.stop();
     };
-  }, [allowedLengths, confirmReads, minLength, possibleFormats, requireNumeric, stabilizeMs]);
+  }, [
+    allowedLengths,
+    confirmReads,
+    continuous,
+    cooldownMs,
+    minLength,
+    possibleFormats,
+    requireNumeric,
+    stabilizeMs,
+  ]);
 
   return (
     <div>

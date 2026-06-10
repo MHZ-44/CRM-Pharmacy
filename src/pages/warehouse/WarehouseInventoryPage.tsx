@@ -1,96 +1,43 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { FiSearch } from "react-icons/fi";
 import { Link } from "react-router-dom";
-
-type Product = {
-  id: number;
-  name: string;
-  quantity: number;
-  company: string;
-  price: number;
-  expiryDate: string;
-  strength?: string;
-};
+import { useGetMedicineW } from "@/hooks/warehouse/useGetMedicineW";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export default function WarehouseInventory() {
-  const defaultProducts: Product[] = [
-    {
-      id: 1,
-      name: "Paracetamol",
-      quantity: 3,
-      company: "Pfizer",
-      price: 2.5,
-      expiryDate: "2026-05-01",
-      strength: "500mg",
-    },
-    {
-      id: 2,
-      name: "Amoxicillin",
-      quantity: 0,
-      company: "Novartis",
-      price: 4,
-      expiryDate: "2025-08-10",
-      strength: "250mg",
-    },
-    {
-      id: 3,
-      name: "Ibuprofen",
-      quantity: 2,
-      company: "Bayer",
-      price: 3.2,
-      expiryDate: "2026-02-15",
-      strength: "400mg",
-    },
-    {
-      id: 4,
-      name: "Ciprofloxacin",
-      quantity: 18,
-      company: "Roche",
-      price: 5.5,
-      expiryDate: "2025-11-20",
-      strength: "500mg",
-    },
-    {
-      id: 5,
-      name: "Vitamin C",
-      quantity: 0,
-      company: "Jamieson",
-      price: 6,
-      expiryDate: "2027-01-10",
-      strength: "1000mg",
-    },
-    {
-      id: 6,
-      name: "Metformin",
-      quantity: 4,
-      company: "Sanofi",
-      price: 7,
-      expiryDate: "2026-07-07",
-      strength: "850mg",
-    },
-  ];
-
-  const [products] = useState<Product[]>(() => {
-    const stored = localStorage.getItem("medicines");
-    if (stored) return JSON.parse(stored);
-
-    localStorage.setItem("medicines", JSON.stringify(defaultProducts));
-    return defaultProducts;
-  });
-
   const [searchTerm, setSearchTerm] = useState("");
+  const { data, isLoading, isError, error } = useGetMedicineW();
+  const products = useMemo(() => data ?? [], [data]);
 
-  const filteredProducts = products.filter((product) =>
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()),
+  const filteredProducts = useMemo(() => {
+    const term = searchTerm.trim().toLowerCase();
+    if (!term) return products;
+
+    return products.filter((product) =>
+      [product.name, product.company_name, product.strength, product.form]
+        .join(" ")
+        .toLowerCase()
+        .includes(term),
+    );
+  }, [products, searchTerm]);
+
+  const lowStockProducts = useMemo(
+    () =>
+      products.filter((product) => product.quantity > 0 && product.quantity < 5),
+    [products],
   );
 
-  const lowStockProducts = products.filter(
-    (product) => product.quantity > 0 && product.quantity < 10,
-  );
-
-  const outOfStockProducts = products.filter(
-    (product) => product.quantity === 0,
+  const outOfStockProducts = useMemo(
+    () => products.filter((product) => product.quantity === 0),
+    [products],
   );
 
   return (
@@ -116,7 +63,7 @@ export default function WarehouseInventory() {
 
       {/* STOCK CARDS */}
       <div className="grid grid-cols-2 gap-6">
-        <Link to="/warehouse/low">
+        <Link to="/warehouse/low-stock">
           <div className="cursor-pointer bg-yellow-100 hover:bg-yellow-200 transition p-6 rounded-2xl shadow-md dark:bg-yellow-500/10 dark:hover:bg-yellow-500/20">
             <h2 className="text-xl font-bold text-yellow-800 dark:text-yellow-300">
               Low Stock
@@ -125,12 +72,12 @@ export default function WarehouseInventory() {
               {lowStockProducts.length}
             </p>
             <p className="text-sm text-yellow-800 dark:text-yellow-300">
-              Medicines below 10 items
+              Medicines below 5 items
             </p>
           </div>
         </Link>
 
-        <Link to="/warehouse/out">
+        <Link to="/warehouse/out-of-stock">
           <div className="cursor-pointer bg-red-100 hover:bg-red-200 transition p-6 rounded-2xl shadow-md dark:bg-red-500/10 dark:hover:bg-red-500/20">
             <h2 className="text-xl font-bold text-red-700 dark:text-red-300">
               Out of Stock
@@ -159,39 +106,69 @@ export default function WarehouseInventory() {
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto rounded-2xl shadow-xl border bg-white dark:border-slate-800 dark:bg-slate-900 dark:shadow-none">
-        <table className="w-full border-collapse">
-          <thead className="bg-blue-100 text-lg dark:bg-slate-800">
-            <tr>
-              <th className="p-4 text-left">Name</th>
-              <th className="p-4 text-left">Strength</th>
-              <th className="p-4 text-left">Quantity</th>
-              <th className="p-4 text-left">Company</th>
-              <th className="p-4 text-left">Price ($)</th>
-              <th className="p-4 text-left">Expiry</th>
-            </tr>
-          </thead>
+      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:shadow-none">
+        <Table className="min-w-[900px] border-collapse text-base">
+          <TableHeader className="bg-blue-100 text-lg dark:bg-slate-800">
+            <TableRow>
+              <TableHead className="p-4 text-left">Name</TableHead>
+              <TableHead className="p-4 text-left">Strength</TableHead>
+              <TableHead className="p-4 text-left">Quantity</TableHead>
+              <TableHead className="p-4 text-left">Company</TableHead>
+              <TableHead className="p-4 text-left">Cost Price</TableHead>
+              <TableHead className="p-4 text-left">Sell Price</TableHead>
+              <TableHead className="p-4 text-left">Form</TableHead>
+            </TableRow>
+          </TableHeader>
 
-          <tbody>
-            {filteredProducts.map((product, index) => (
-              <tr
-                key={product.id}
-                className={`border-b dark:border-slate-800 ${
-                  index % 2 === 0
-                    ? "bg-white dark:bg-slate-900"
-                    : "bg-gray-100 dark:bg-slate-900/60"
-                } hover:bg-blue-50 dark:hover:bg-slate-800/70 transition`}
-              >
-                <td className="p-4 font-semibold">{product.name}</td>
-                <td className="p-4">{product.strength || "—"}</td>
-                <td className="p-4 font-semibold">{product.quantity}</td>
-                <td className="p-4">{product.company}</td>
-                <td className="p-4">{product.price}</td>
-                <td className="p-4">{product.expiryDate}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+          <TableBody>
+            {isLoading ? (
+              <TableRow>
+                <TableCell colSpan={7} className="p-8 text-center text-gray-500 dark:text-slate-400">
+                  Loading medicines...
+                </TableCell>
+              </TableRow>
+            ) : isError ? (
+              <TableRow>
+                <TableCell colSpan={7} className="p-8 text-center text-red-500 dark:text-red-400">
+                  {error?.message || "Failed to load medicines."}
+                </TableCell>
+              </TableRow>
+            ) : filteredProducts.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={7} className="p-8 text-center text-gray-500 dark:text-slate-400">
+                  No medicines found.
+                </TableCell>
+              </TableRow>
+            ) : (
+              filteredProducts.map((product, index) => (
+                <TableRow
+                  key={product.id}
+                  className={`transition hover:bg-[rgba(15,143,139,0.08)] dark:hover:bg-slate-800/70 ${
+                    index % 2 === 0
+                      ? "bg-white dark:bg-slate-900"
+                      : "bg-gray-100 dark:bg-slate-900/60"
+                  }`}
+                >
+                  <TableCell className="p-4 font-semibold">
+                    {product.name}
+                  </TableCell>
+                  <TableCell className="p-4 font-medium text-blue-700 dark:text-blue-300">
+                    {product.strength}
+                  </TableCell>
+                  <TableCell className="p-4 font-semibold">
+                    {product.quantity}
+                  </TableCell>
+                  <TableCell className="p-4">{product.company_name}</TableCell>
+                  <TableCell className="p-4">{product.cost_price}</TableCell>
+                  <TableCell className="p-4">
+                    {product.default_sell_price}
+                  </TableCell>
+                  <TableCell className="p-4">{product.form}</TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
       </div>
     </div>
   );

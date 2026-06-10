@@ -3,7 +3,7 @@ import type { Medicine } from "@/entities/Medicine";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 
-export const useGetMedicine = () => {
+export const useGetMedicine = (enabled = true) => {
   const [searchParams] = useSearchParams();
 
   const paramsString = searchParams.toString();
@@ -28,6 +28,7 @@ export const useGetMedicine = () => {
   >({
     queryKey: ["pharmacy", paramsString],
     queryFn: () => fetcher<Medicine[]>(url),
+    enabled,
     select: (response) => {
       const pharmacyMedicine = Array.isArray(response)
         ? response

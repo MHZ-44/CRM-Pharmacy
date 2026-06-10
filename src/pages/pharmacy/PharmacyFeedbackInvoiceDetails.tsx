@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   Table,
@@ -8,6 +9,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useGetOneFeedbackInvoices } from "@/hooks/pharmacy/useGetOneFeedbackInvoices";
+import { useUpdatePaidTotal } from "@/hooks/pharmacy/useUpdatePaidTotal";
+import { toast } from "sonner";
+import { getApiErrorMessage } from "@/lib/getApiErrorMessage";
 
 export default function PharmacyFeedbackInvoiceDetails() {
   const { invoiceId } = useParams();
@@ -15,6 +19,36 @@ export default function PharmacyFeedbackInvoiceDetails() {
     useGetOneFeedbackInvoices(invoiceId);
   const items = data ?? [];
   const summary = items[0];
+  const [paidTotalDraft, setPaidTotalDraft] = useState<string | null>(null);
+  const { mutate: updatePaidTotal, isPending: isUpdatingPaid } =
+    useUpdatePaidTotal();
+  const paidTotalInput =
+    paidTotalDraft ??
+    (summary?.paid_total !== undefined && summary?.paid_total !== null
+      ? String(summary.paid_total)
+      : "");
+
+  const handlePaidTotalUpdate = () => {
+    if (!invoiceId) return;
+    const parsed = Number(paidTotalInput);
+    if (!Number.isFinite(parsed)) {
+      toast.error("Paid total is required.");
+      return;
+    }
+    updatePaidTotal(
+      { id: invoiceId, paid_total: parsed },
+      {
+        onSuccess: () => {
+          toast.success("Paid total updated.");
+        },
+        onError: (err) => {
+          toast.error(
+            getApiErrorMessage(err, "Failed to update paid total."),
+          );
+        },
+      },
+    );
+  };
 
   return (
     <div className="min-h-screen space-y-8 p-8 text-[18px] text-gray-900 bg-gradient-to-br from-white via-slate-200 to-blue-100 dark:from-gray-900 dark:via-slate-900 dark:to-blue-950 dark:text-slate-100">
@@ -108,7 +142,7 @@ export default function PharmacyFeedbackInvoiceDetails() {
                 {items.map((item, index) => (
                   <TableRow
                     key={`${item.id}-${index}`}
-                    className={`transition hover:bg-blue-50 dark:hover:bg-slate-800/70 ${
+                    className={`transition hover:bg-[rgba(15,143,139,0.08)] dark:hover:bg-slate-800/70 ${
                       index % 2 === 0
                         ? "bg-white dark:bg-slate-900"
                         : "bg-gray-100 dark:bg-slate-900/60"
@@ -138,7 +172,36 @@ export default function PharmacyFeedbackInvoiceDetails() {
                     Paid Total
                   </TableCell>
                   <TableCell className="p-4">
-                    {summary?.paid_total ?? "—"}
+                    <div className="flex flex-wrap items-center gap-3">
+                      <span className="text-sm text-slate-700 dark:text-slate-200">
+                        {summary?.paid_total ?? "—"}
+                      </span>
+                      <input
+                        type="number"
+                        min={0}
+                        value={paidTotalInput}
+                        onChange={(event) =>
+                          setPaidTotalDraft(event.target.value)
+                        }
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") {
+                            event.preventDefault();
+                            handlePaidTotalUpdate();
+                          }
+                        }}
+                        placeholder="Paid amount"
+                        className="w-32 rounded-lg border bg-white px-2.5 py-1.5 text-[15px] shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 no-spinner"
+                        disabled={isUpdatingPaid}
+                      />
+                      <button
+                        type="button"
+                        onClick={handlePaidTotalUpdate}
+                        disabled={isUpdatingPaid}
+                        className="rounded-lg bg-blue-600 px-2.5 py-1 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
+                      >
+                        {isUpdatingPaid ? "Saving..." : "Update"}
+                      </button>
+                    </div>
                   </TableCell>
                 </TableRow>
               </>

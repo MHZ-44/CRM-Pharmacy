@@ -1,110 +1,390 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import { BarcodeFormat } from "@zxing/browser";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import BarcodeScanner from "@/components/BarcodeScanner";
+import { useCreateMedicineW } from "@/hooks/warehouse/useCreateMedicineW";
+import { useGetOneMedicineW } from "@/hooks/warehouse/useGetOneMedicineW";
 import { toast } from "sonner";
+import { getApiErrorMessage } from "@/lib/getApiErrorMessage";
+import { useNavigate } from "react-router-dom";
+
+const PRODUCT_BARCODE_LENGTHS = [13];
+const PRODUCT_BARCODE_FORMATS = [BarcodeFormat.EAN_13];
 
 export default function WarehouseAddMedicine() {
+  const [showScanner, setShowScanner] = useState(false);
+  const [barcode, setBarcode] = useState("");
+  const { mutate: createMedicine, isPending } = useCreateMedicineW();
   const navigate = useNavigate();
+  const { data: medicineByBarcode } = useGetOneMedicineW(barcode);
+  const isExisting = Boolean(medicineByBarcode);
 
-  const [medicine, setMedicine] = useState({
+  const [draft, setDraft] = useState({
     name: "",
     strength: "",
-    quantity: "",
-    company: "",
-    price: "",
-    expiryDate: "",
+    companyName: "",
+    form: "",
   });
+  const [costPrice, setCostPrice] = useState("");
+  const [quantity, setQuantity] = useState("");
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setMedicine({
-      ...medicine,
-      [e.target.name]: e.target.value,
+  const displayName = isExisting ? medicineByBarcode?.name ?? "" : draft.name;
+  const displayStrength = isExisting
+    ? medicineByBarcode?.strength ?? ""
+    : draft.strength;
+  const displayCompanyName = isExisting
+    ? medicineByBarcode?.company_name ?? ""
+    : draft.companyName;
+  const displayForm = isExisting ? medicineByBarcode?.form ?? "" : draft.form;
+
+  const resetForm = useCallback(() => {
+    setDraft({
+      name: "",
+      strength: "",
+      companyName: "",
+      form: "",
+    });
+    setCostPrice("");
+    setQuantity("");
+    setBarcode("");
+  }, []);
+
+  const tryAutoSubmit = useCallback(
+    (nextBarcode: string) => {
+      const parsedQuantity = Number.parseInt(quantity, 10);
+      const parsedCostPrice = Number.parseFloat(costPrice);
+
+      if (!nextBarcode.trim()) return;
+      if (!displayName.trim()) return;
+      if (!displayStrength.trim()) return;
+      if (!displayCompanyName.trim()) return;
+      if (!displayForm.trim()) return;
+      if (Number.isNaN(parsedCostPrice) || parsedCostPrice <= 0) return;
+      if (Number.isNaN(parsedQuantity) || parsedQuantity < 0) return;
+
+      createMedicine(
+        {
+          barcode: nextBarcode.trim(),
+          name: displayName,
+          strength: displayStrength,
+          company_name: displayCompanyName,
+          form: displayForm,
+          cost_price: parsedCostPrice,
+          default_sell_price: parsedCostPrice,
+          quantity: parsedQuantity,
+        },
+        {
+          onSuccess: () => {
+            toast.success("Medicine saved successfully.");
+            resetForm();
+          },
+          onError: (error) => {
+            toast.error(getApiErrorMessage(error, "Failed to save medicine."));
+          },
+        },
+      );
+    },
+    [
+      costPrice,
+      quantity,
+      displayName,
+      displayStrength,
+      displayCompanyName,
+      displayForm,
+      createMedicine,
+      resetForm,
+    ],
+  );
+
+  const handleScan = (value: string) => {
+    const trimmed = value.trim();
+    if (!trimmed) return;
+    setBarcode(trimmed);
+    setDraft({
+      name: "",
+      strength: "",
+      companyName: "",
+      form: "",
+    });
+    tryAutoSubmit(trimmed);
+  };
+
+  const handleBarcodeChange = (value: string) => {
+    setBarcode(value);
+    setDraft({
+      name: "",
+      strength: "",
+      companyName: "",
+      form: "",
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const medicines = JSON.parse(localStorage.getItem("medicines") || "[]");
+    const parsedQuantity = Number.parseInt(quantity, 10);
+    const parsedCostPrice = Number.parseFloat(costPrice);
 
-    medicines.push({
-      ...medicine,
-      id: Date.now(),
-    });
+    if (!barcode.trim()) {
+      toast.error("Barcode is required.");
+      return;
+    }
 
-    localStorage.setItem("medicines", JSON.stringify(medicines));
+    if (!displayName.trim()) {
+      toast.error("Medicine name is required.");
+      return;
+    }
 
-    toast.success("Medicine added successfully");
+    if (!displayStrength.trim()) {
+      toast.error("Strength is required.");
+      return;
+    }
 
-    navigate("/warehouse");
+    if (!displayCompanyName.trim()) {
+      toast.error("Company is required.");
+      return;
+    }
+
+    if (!displayForm.trim()) {
+      toast.error("Form is required.");
+      return;
+    }
+
+    if (Number.isNaN(parsedCostPrice) || parsedCostPrice <= 0) {
+      toast.error("Cost price must be a valid positive number.");
+      return;
+    }
+
+    if (Number.isNaN(parsedQuantity) || parsedQuantity < 0) {
+      toast.error("Quantity must be a valid non-negative number.");
+      return;
+    }
+
+    createMedicine(
+      {
+        barcode: barcode.trim(),
+        name: displayName,
+        strength: displayStrength,
+        company_name: displayCompanyName,
+        form: displayForm,
+        cost_price: parsedCostPrice,
+        default_sell_price: parsedCostPrice,
+        quantity: parsedQuantity,
+      },
+      {
+        onSuccess: () => {
+          toast.success("Medicine saved successfully.");
+          resetForm();
+          navigate("/warehouse/inventory");
+        },
+        onError: (error) => {
+          toast.error(getApiErrorMessage(error, "Failed to save medicine."));
+        },
+      },
+    );
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-8 bg-gradient-to-br from-white via-slate-200 to-blue-100 text-slate-900 dark:from-gray-900 dark:via-slate-900 dark:to-blue-950 dark:text-slate-100">
-      <form
-        onSubmit={handleSubmit}
-        className="w-[500px] rounded-3xl border border-slate-200 bg-white p-8 shadow-xl space-y-4 dark:border-slate-800 dark:bg-slate-900 dark:shadow-none"
-      >
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-          Add Medicine
-        </h1>
+    <div className="min-h-screen w-full bg-gradient-to-br from-white via-slate-200 to-blue-100 text-slate-900 dark:from-gray-900 dark:via-slate-900 dark:to-blue-950 dark:text-slate-100">
+      <div className="flex w-full flex-col gap-6 px-4 py-6 sm:px-6 lg:px-8">
+        <div>
+          <h1 className="text-4xl font-semibold tracking-tight text-blue-800 dark:text-blue-300">
+            Create Medicine
+          </h1>
+          <p className="text-sm text-blue-600 dark:text-blue-300">
+            Add or scan a medicine to your warehouse inventory
+          </p>
+        </div>
 
-        <input
-          name="name"
-          placeholder="Medicine name"
-          onChange={handleChange}
-          className="w-full p-3 border rounded-xl bg-white text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
-          required
-        />
+        <Card className="w-full border border-slate-200 bg-white shadow-lg dark:border-slate-800 dark:bg-gray-900">
+          <CardContent className="px-8">
+            <form className="w-full text-lg" onSubmit={handleSubmit}>
+              <FieldGroup>
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                  <Field>
+                    <FieldLabel className="text-base" htmlFor="form-name">
+                      Name
+                    </FieldLabel>
+                    <Input
+                      id="form-name"
+                      type="text"
+                      placeholder="Paracetamol"
+                      required
+                      value={displayName}
+                      onChange={(event) =>
+                        setDraft((prev) => ({
+                          ...prev,
+                          name: event.target.value,
+                        }))
+                      }
+                      disabled={isExisting}
+                      className="h-11 text-base md:text-base dark:bg-slate-900"
+                    />
+                  </Field>
 
-        <input
-          name="strength"
-          placeholder="Strength"
-          onChange={handleChange}
-          className="w-full p-3 border rounded-xl bg-white text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
-        />
+                  <Field>
+                    <FieldLabel className="text-base" htmlFor="form-strength">
+                      Strength
+                    </FieldLabel>
+                    <Input
+                      id="form-strength"
+                      type="text"
+                      placeholder="500mg"
+                      value={displayStrength}
+                      onChange={(event) =>
+                        setDraft((prev) => ({
+                          ...prev,
+                          strength: event.target.value,
+                        }))
+                      }
+                      disabled={isExisting}
+                      className="h-11 text-base md:text-base dark:bg-slate-900"
+                    />
+                  </Field>
 
-        <input
-          name="quantity"
-          type="number"
-          placeholder="Quantity"
-          onChange={handleChange}
-          className="w-full p-3 border rounded-xl bg-white text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
-          required
-        />
+                  <Field className="md:col-span-2">
+                    <FieldLabel className="text-base" htmlFor="form-barcode">
+                      Barcode
+                    </FieldLabel>
+                    <div className="flex flex-wrap gap-3">
+                      <Input
+                        id="form-barcode"
+                        type="text"
+                        placeholder="Scan or enter barcode"
+                        value={barcode}
+                        onChange={(event) =>
+                          handleBarcodeChange(event.target.value)
+                        }
+                        className="h-11 text-base md:text-base dark:bg-slate-900"
+                      />
+                      <Button
+                        type="button"
+                        variant={showScanner ? "secondary" : "outline"}
+                        onClick={() => setShowScanner((value) => !value)}
+                      >
+                        {showScanner ? "Close Scanner" : "Scan Barcode"}
+                      </Button>
+                    </div>
+                    <FieldDescription>
+                      {isExisting
+                        ? "Barcode exists. Product fields are auto-filled and locked."
+                        : "Use the camera to scan the product barcode."}
+                    </FieldDescription>
+                  </Field>
 
-        <input
-          name="company"
-          placeholder="Company"
-          onChange={handleChange}
-          className="w-full p-3 border rounded-xl bg-white text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
-        />
+                  {showScanner && (
+                    <Field className="md:col-span-2">
+                      <div className="w-full max-w-xs rounded-md border bg-background p-3">
+                        <BarcodeScanner
+                          requireNumeric
+                          minLength={8}
+                          confirmReads={2}
+                          stabilizeMs={800}
+                          allowedLengths={PRODUCT_BARCODE_LENGTHS}
+                          possibleFormats={PRODUCT_BARCODE_FORMATS}
+                          continuous
+                          cooldownMs={1500}
+                          onScan={handleScan}
+                        />
+                      </div>
+                    </Field>
+                  )}
 
-        <input
-          name="price"
-          type="number"
-          placeholder="Price"
-          onChange={handleChange}
-          className="w-full p-3 border rounded-xl bg-white text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
-          required
-        />
+                  <Field>
+                    <FieldLabel className="text-base" htmlFor="form-company">
+                      Company
+                    </FieldLabel>
+                    <Input
+                      id="form-company"
+                      type="text"
+                      placeholder="Pfizer"
+                      value={displayCompanyName}
+                      onChange={(event) =>
+                        setDraft((prev) => ({
+                          ...prev,
+                          companyName: event.target.value,
+                        }))
+                      }
+                      disabled={isExisting}
+                      className="h-11 text-base md:text-base dark:bg-slate-900"
+                    />
+                  </Field>
 
-        <input
-          name="expiryDate"
-          type="date"
-          onChange={handleChange}
-          className="w-full p-3 border rounded-xl bg-white text-slate-900 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
-          required
-        />
+                  <Field>
+                    <FieldLabel className="text-base" htmlFor="form-form">
+                      Form
+                    </FieldLabel>
+                    <Input
+                      id="form-form"
+                      type="text"
+                      placeholder="Tablets"
+                      value={displayForm}
+                      onChange={(event) =>
+                        setDraft((prev) => ({
+                          ...prev,
+                          form: event.target.value,
+                        }))
+                      }
+                      disabled={isExisting}
+                      className="h-11 text-base md:text-base dark:bg-slate-900"
+                    />
+                  </Field>
 
-        <Button
-          type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-        >
-          Add Medicine
-        </Button>
+                  <Field>
+                    <FieldLabel className="text-base" htmlFor="form-cost">
+                      Cost Price
+                    </FieldLabel>
+                    <Input
+                      id="form-cost"
+                      type="number"
+                      step="0.01"
+                      placeholder="2.50"
+                      value={costPrice}
+                      onChange={(event) => setCostPrice(event.target.value)}
+                      className="h-11 text-base md:text-base dark:bg-slate-900"
+                    />
+                  </Field>
 
-      </form>
+                  <Field>
+                    <FieldLabel className="text-base" htmlFor="form-qty">
+                      Quantity
+                    </FieldLabel>
+                    <Input
+                      id="form-qty"
+                      type="number"
+                      placeholder="0"
+                      value={quantity}
+                      onChange={(event) => setQuantity(event.target.value)}
+                      className="h-11 text-base md:text-base dark:bg-slate-900"
+                    />
+                  </Field>
+                </div>
+
+                <Field orientation="horizontal">
+                  <Button type="button" variant="outline" onClick={resetForm}>
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    disabled={isPending}
+                    className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-400 dark:hover:bg-[rgba(15,143,139,0.08)]0"
+                  >
+                    {isPending ? "Submitting..." : "Submit"}
+                  </Button>
+                </Field>
+              </FieldGroup>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

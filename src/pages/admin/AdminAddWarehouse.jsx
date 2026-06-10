@@ -1,6 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCreateWarehouse } from "@/hooks/superAdmin/useCreateWarehouse";
+import { useNavigate } from "react-router-dom";
+import { LOCATIONS } from "@/lib/locations";
 import {
   UserIcon,
   EnvelopeIcon,
@@ -18,6 +20,7 @@ export default function AdminAddWarehouse() {
   const [darkMode, setDarkMode] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
   const { mutate: createWarehouse, isPending } = useCreateWarehouse();
+  const navigate = useNavigate();
 
   // Controlled inputs
   const [warehouseName, setWarehouseName] = useState("");
@@ -28,22 +31,7 @@ export default function AdminAddWarehouse() {
   const [showPassword, setShowPassword] = useState(false);
   const [warehouseLocation, setWarehouseLocation] = useState("");
 
-  // Locations from API
-  const [locations, setLocations] = useState([]);
-
-  // Fetch locations from backend
-  useEffect(() => {
-    async function fetchLocations() {
-      try {
-        const res = await fetch("/api/locations"); // رابط الباك اند للمواقع
-        const data = await res.json();
-        setLocations(data.locations || []);
-      } catch (err) {
-        console.error("Failed to fetch locations:", err);
-      }
-    }
-    fetchLocations();
-  }, []);
+  const locations = LOCATIONS;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -69,6 +57,7 @@ export default function AdminAddWarehouse() {
         setOwnerEmail("");
         setPassword("");
         setWarehouseLocation("");
+        navigate("/warehouses");
       },
       onError: () => {
         alert("Failed to add warehouse!");
@@ -184,8 +173,8 @@ export default function AdminAddWarehouse() {
             >
               <option value="">Select Location</option>
               {locations.map((loc) => (
-                <option key={loc.id} value={loc.id}>
-                  {loc.name ?? loc.label}
+                <option key={loc.value} value={loc.value}>
+                  {loc.label}
                 </option>
               ))}
             </select>
@@ -197,10 +186,7 @@ export default function AdminAddWarehouse() {
             whileTap={{ scale: 0.97 }}
             type="submit"
             disabled={isPending}
-            className="w-full py-3 rounded-xl font-semibold text-blue-100
-              bg-gradient-to-r from-blue-500 to-blue-700
-              hover:from-blue-700 hover:to-blue-800
-              shadow-lg disabled:cursor-not-allowed disabled:opacity-70"
+            className="w-full rounded-xl bg-[#0f8f8b] py-3 font-semibold text-white shadow-lg transition hover:bg-[#0c7d79] disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isPending ? "Adding..." : "Add Warehouse"}
           </motion.button>

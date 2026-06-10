@@ -46,7 +46,7 @@ export default function PharmacyOutOfStockMedicine() {
         </div>
 
         <Link
-          to="/"
+          to="/pharmacy/medicines"
           className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
         >
           Back to Medicines
@@ -110,7 +110,7 @@ export default function PharmacyOutOfStockMedicine() {
               filteredMedicines.map((medicine, index) => (
                 <TableRow
                   key={medicine.id}
-                  className={`transition hover:bg-blue-50 dark:hover:bg-slate-800/70 ${
+                  className={`transition hover:bg-[rgba(15,143,139,0.08)] dark:hover:bg-slate-800/70 ${
                     index % 2 === 0
                       ? "bg-white dark:bg-slate-900"
                       : "bg-gray-100 dark:bg-slate-900/60"

@@ -166,7 +166,7 @@ export const useGetCart = () => {
   return query;
 };
 
-export const useGetCartStatus = () => {
+export const useGetCartStatus = (enabled = true) => {
   return useQuery<
     unknown,
     Error,
@@ -174,6 +174,7 @@ export const useGetCartStatus = () => {
   >({
     queryKey: ["cart", "status"],
     queryFn: () => fetcher<unknown>(url),
+    enabled,
     select: (response) => {
       const source = getSourceEntries(response);
       const items = normalizeCartItems(source);

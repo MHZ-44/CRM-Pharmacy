@@ -28,3 +28,14 @@ export interface SalesInvoice {
     };
   };
 }
+
+export interface ExpenseInvoice {
+  id: number;
+  pharmacy_id: number;
+  warehouse_id: number;
+  amount: string;
+  created_by_name: string;
+  description: string;
+  created_at: string;
+  updated_at: string;
+}

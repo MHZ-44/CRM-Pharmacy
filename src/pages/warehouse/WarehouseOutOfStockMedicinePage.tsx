@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import { Link } from "react-router-dom";
+import { useGetMedicineW } from "@/hooks/warehouse/useGetMedicineW";
 import {
   Table,
   TableBody,
@@ -10,31 +11,14 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-type Product = {
-  id: number;
-  name: string;
-  quantity: number;
-  company: string;
-  price: number;
-  expiryDate: string;
-  strength?: string;
-};
-
 export default function WarehouseOutOfStockMedicine() {
   const [searchTerm, setSearchTerm] = useState("");
-
-  const medicines: Product[] = [
-    { id: 1, name: "Paracetamol", quantity: 3, company: "Pfizer", price: 2.5, expiryDate: "2026-05-01", strength: "500mg" },
-    { id: 2, name: "Amoxicillin", quantity: 0, company: "Novartis", price: 4, expiryDate: "2025-08-10", strength: "250mg" },
-    { id: 3, name: "Ibuprofen", quantity: 2, company: "Bayer", price: 3.2, expiryDate: "2026-02-15", strength: "400mg" },
-    { id: 4, name: "Ciprofloxacin", quantity: 18, company: "Roche", price: 5.5, expiryDate: "2025-11-20", strength: "500mg" },
-    { id: 5, name: "Vitamin C", quantity: 0, company: "Jamieson", price: 6, expiryDate: "2027-01-10", strength: "1000mg" },
-    { id: 6, name: "Metformin", quantity: 4, company: "Sanofi", price: 7, expiryDate: "2026-07-07", strength: "850mg" },
-  ];
+  const { data, isLoading, isError, error } = useGetMedicineW();
+  const medicines = useMemo(() => data ?? [], [data]);
 
   const outOfStockMedicines = useMemo(
     () => medicines.filter((medicine) => medicine.quantity === 0),
-    [medicines]
+    [medicines],
   );
 
   const filteredMedicines = useMemo(() => {
@@ -42,10 +26,10 @@ export default function WarehouseOutOfStockMedicine() {
     if (!term) return outOfStockMedicines;
 
     return outOfStockMedicines.filter((medicine) =>
-      [medicine.name, medicine.company, medicine.strength]
+      [medicine.name, medicine.company_name, medicine.strength, medicine.form]
         .join(" ")
         .toLowerCase()
-        .includes(term)
+        .includes(term),
     );
   }, [outOfStockMedicines, searchTerm]);
 
@@ -97,17 +81,36 @@ export default function WarehouseOutOfStockMedicine() {
               <TableHead className="p-4 text-left">Strength</TableHead>
               <TableHead className="p-4 text-left">Quantity</TableHead>
               <TableHead className="p-4 text-left">Company</TableHead>
-              <TableHead className="p-4 text-left">Price</TableHead>
-              <TableHead className="p-4 text-left">Expiry</TableHead>
+              <TableHead className="p-4 text-left">Cost Price</TableHead>
+              <TableHead className="p-4 text-left">Sell Price</TableHead>
+              <TableHead className="p-4 text-left">Form</TableHead>
             </TableRow>
           </TableHeader>
 
           <TableBody>
 
-            {filteredMedicines.length === 0 ? (
+            {isLoading ? (
               <TableRow>
                 <TableCell
-                  colSpan={6}
+                  colSpan={7}
+                  className="p-8 text-center text-gray-500 dark:text-slate-400"
+                >
+                  Loading medicines...
+                </TableCell>
+              </TableRow>
+            ) : isError ? (
+              <TableRow>
+                <TableCell
+                  colSpan={7}
+                  className="p-8 text-center text-red-500 dark:text-red-400"
+                >
+                  {error?.message || "Failed to load medicines."}
+                </TableCell>
+              </TableRow>
+            ) : filteredMedicines.length === 0 ? (
+              <TableRow>
+                <TableCell
+                  colSpan={7}
                   className="p-8 text-center text-gray-500 dark:text-slate-400"
                 >
                   No out of stock medicines found
@@ -117,7 +120,7 @@ export default function WarehouseOutOfStockMedicine() {
               filteredMedicines.map((medicine, index) => (
                 <TableRow
                   key={medicine.id}
-                  className={`transition hover:bg-blue-50 dark:hover:bg-slate-800/70 ${
+                  className={`transition hover:bg-[rgba(15,143,139,0.08)] dark:hover:bg-slate-800/70 ${
                     index % 2 === 0
                       ? "bg-white dark:bg-slate-900"
                       : "bg-gray-100 dark:bg-slate-900/60"
@@ -137,15 +140,19 @@ export default function WarehouseOutOfStockMedicine() {
                   </TableCell>
 
                   <TableCell className="p-4">
-                    {medicine.company}
+                    {medicine.company_name}
                   </TableCell>
 
                   <TableCell className="p-4">
-                    {medicine.price}
+                    {medicine.cost_price}
                   </TableCell>
 
                   <TableCell className="p-4">
-                    {medicine.expiryDate}
+                    {medicine.default_sell_price}
+                  </TableCell>
+
+                  <TableCell className="p-4">
+                    {medicine.form}
                   </TableCell>
 
                 </TableRow>

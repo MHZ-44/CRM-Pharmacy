@@ -9,6 +9,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useGetWarehouses } from "@/hooks/pharmacy/useGetWarehouses";
+import { useGetRating } from "@/hooks/pharmacy/useGetRating";
+import { normalizeDateSearch } from "@/lib/normalizeDateSearch";
+import { StarRating } from "@/components/StarRating";
 import { useNavigate } from "react-router-dom";
 
 function PharmacyShowWarehouses() {
@@ -72,6 +75,7 @@ function PharmacyShowWarehouses() {
               <TableHead className="p-4 text-left">Number</TableHead>
               <TableHead className="p-4 text-left">Location</TableHead>
               <TableHead className="p-4 text-left">Added Date</TableHead>
+              <TableHead className="p-4 text-left">Rating</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -110,7 +114,7 @@ function PharmacyShowWarehouses() {
                     setSelectedWarehouseId(warehouse.id);
                     navigate(`/pharmacy/warehouses/${warehouse.id}/medicines`);
                   }}
-                  className={`cursor-pointer transition hover:bg-blue-50 dark:hover:bg-slate-800/70 ${
+                  className={`cursor-pointer transition hover:bg-[rgba(15,143,139,0.08)] dark:hover:bg-slate-800/70 ${
                     selectedWarehouseId === warehouse.id
                       ? "bg-blue-100 dark:bg-slate-800"
                       : index % 2 === 0
@@ -128,6 +132,13 @@ function PharmacyShowWarehouses() {
                   <TableCell className="p-4">{warehouse.phone}</TableCell>
                   <TableCell className="p-4">{warehouse.regionName}</TableCell>
                   <TableCell className="p-4">{warehouse.addedDate}</TableCell>
+                  <TableCell className="p-4">
+                    <WarehouseRatingSummary
+                      warehouseId={warehouse.id}
+                      fallbackAverageRating={warehouse.averageRating}
+                      fallbackRatingsCount={warehouse.ratingsCount}
+                    />
+                  </TableCell>
                 </TableRow>
               ))
             )}
@@ -138,20 +149,27 @@ function PharmacyShowWarehouses() {
   );
 }
 
+function WarehouseRatingSummary({
+  warehouseId,
+  fallbackAverageRating,
+  fallbackRatingsCount,
+}: {
+  warehouseId: number;
+  fallbackAverageRating: number;
+  fallbackRatingsCount: number;
+}) {
+  const { data } = useGetRating(warehouseId);
+  const averageRating = data?.rating_average ?? fallbackAverageRating;
+  const ratingsCount = data?.ratings_count ?? fallbackRatingsCount;
+
+  return (
+    <div className="flex min-w-[170px] items-center gap-3">
+      <StarRating value={averageRating} size={20} readOnly />
+      <span className="text-xs text-slate-500 dark:text-slate-400">
+        {averageRating ? averageRating.toFixed(1) : "0.0"} · {ratingsCount}
+      </span>
+    </div>
+  );
+}
+
 export default PharmacyShowWarehouses;
-
-const normalizeDateSearch = (term: string) => {
-  const dashMatch = term.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
-  if (dashMatch) {
-    const [, year, month, day] = dashMatch;
-    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-  }
-
-  const slashMatch = term.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
-  if (slashMatch) {
-    const [, day, month, year] = slashMatch;
-    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-  }
-
-  return "";
-};

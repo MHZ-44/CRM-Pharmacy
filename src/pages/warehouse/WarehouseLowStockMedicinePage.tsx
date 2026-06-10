@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { FiSearch } from "react-icons/fi";
 import { Link } from "react-router-dom";
+import { useGetMedicineW } from "@/hooks/warehouse/useGetMedicineW";
 import {
   Table,
   TableBody,
@@ -10,29 +11,17 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-// لاحقاً عندما يأتي API
-// import { useGetWarehouseMedicine } from "@/hooks/warehouse/useGetWarehouseMedicine";
-
 export default function WarehouseLowStockMedicine() {
   const [searchTerm, setSearchTerm] = useState("");
-
-  // مؤقتاً بدون API
-  const medicines: any[] = [];
-
-  /*
-  لاحقاً يصبح هكذا
-
-  const { data, isLoading, isError, error } = useGetWarehouseMedicine();
-  const medicines = data ?? [];
-  */
-
-  const isLoading = false;
-  const isError = false;
-  const error: any = null;
+  const { data, isLoading, isError, error } = useGetMedicineW();
+  const medicines = useMemo(() => data ?? [], [data]);
 
   const lowStockMedicines = useMemo(
-    () => medicines.filter((medicine) => medicine.quantity > 0 && medicine.quantity < 5),
-    [medicines]
+    () =>
+      medicines.filter(
+        (medicine) => medicine.quantity > 0 && medicine.quantity < 5,
+      ),
+    [medicines],
   );
 
   const filteredMedicines = useMemo(() => {
@@ -43,7 +32,7 @@ export default function WarehouseLowStockMedicine() {
       [medicine.name, medicine.company_name, medicine.strength, medicine.form]
         .join(" ")
         .toLowerCase()
-        .includes(term)
+        .includes(term),
     );
   }, [lowStockMedicines, searchTerm]);
 
@@ -134,7 +123,7 @@ export default function WarehouseLowStockMedicine() {
 
                 <TableRow
                   key={medicine.id}
-                  className={`transition hover:bg-blue-50 dark:hover:bg-slate-800/70 ${
+                  className={`transition hover:bg-[rgba(15,143,139,0.08)] dark:hover:bg-slate-800/70 ${
                     index % 2 === 0
                       ? "bg-white dark:bg-slate-900"
                       : "bg-gray-100 dark:bg-slate-900/60"

@@ -14,7 +14,12 @@ export const ROLES = [
 
 export type Role = (typeof ROLES)[number];
 
-export const DEFAULT_ROLE: Role = "pharmacies";
+export const ROLE_LABELS: Record<Role, string> = {
+  superadmin: "Super Admin",
+  admin: "Admin",
+  warehouse: "Warehouse",
+  pharmacies: "Pharmacist",
+};
 
 export function isRole(value: string | null | undefined): value is Role {
   return !!value && (ROLES as readonly string[]).includes(value);
@@ -37,12 +42,45 @@ export function setStoredRole(role: Role) {
   window.localStorage.setItem(ROLE_STORAGE_KEY, role);
 }
 
+export function getStoredAuthToken(): string | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  for (const storage of [window.localStorage, window.sessionStorage]) {
+    for (const key of TOKEN_STORAGE_KEYS) {
+      const token = storage.getItem(key);
+      if (token) {
+        return token;
+      }
+    }
+  }
+
+  return null;
+}
+
+export function clearStoredAuth() {
+  if (typeof window === "undefined") {
+    return;
+  }
+
+  for (const storage of [window.localStorage, window.sessionStorage]) {
+    for (const key of TOKEN_STORAGE_KEYS) {
+      storage.removeItem(key);
+    }
+    storage.removeItem(ROLE_STORAGE_KEY);
+  }
+}
+
 function normalizeRole(value: unknown): Role | null {
   if (typeof value !== "string") {
     return null;
   }
 
-  const normalized = value.trim().toLowerCase().replace(/[\s-]+/g, "_");
+  const normalized = value
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, "_");
 
   if (normalized === "super_admin") {
     return "superadmin";
@@ -103,7 +141,9 @@ function extractRoleFromPayload(payload: Record<string, unknown>): Role | null {
   return null;
 }
 
-export function getRoleFromToken(token: string | null | undefined): Role | null {
+export function getRoleFromToken(
+  token: string | null | undefined,
+): Role | null {
   if (!token) {
     return null;
   }
@@ -117,16 +157,10 @@ export function getRoleFromToken(token: string | null | undefined): Role | null 
 }
 
 export function getRoleFromAuthToken(): Role | null {
-  if (typeof window === "undefined") {
-    return null;
-  }
-
-  for (const key of TOKEN_STORAGE_KEYS) {
-    const token = window.localStorage.getItem(key);
-    const role = getRoleFromToken(token);
-    if (role) {
-      return role;
-    }
+  const token = getStoredAuthToken();
+  const role = getRoleFromToken(token);
+  if (role) {
+    return role;
   }
 
   return null;

@@ -25,7 +25,7 @@ export const useGetFeedbackInvoices = () => {
       feedback: string;
     }[]
   >({
-    queryKey: ["sCart", paramsString],
+    queryKey: ["feedback-invoices", paramsString],
     queryFn: () => fetcher<SalesInvoice[]>(url),
     select: (response) => {
       const salesInvoices = Array.isArray(response)

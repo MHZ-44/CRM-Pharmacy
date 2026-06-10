@@ -24,7 +24,7 @@ export const useGetSalesInvoices = () => {
       created_date: string;
     }[]
   >({
-    queryKey: ["sCart", paramsString],
+    queryKey: ["sales-invoices", paramsString],
     queryFn: () => fetcher<SalesInvoice[]>(url),
     select: (response) => {
       const salesInvoices = Array.isArray(response)

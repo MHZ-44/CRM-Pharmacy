@@ -11,12 +11,30 @@ import {
 } from "@/components/ui/table";
 import { useDeleteAdmin } from "@/hooks/superAdmin/useDeleteAdmin";
 import { useGetAdmins } from "@/hooks/superAdmin/useGetAdmins";
+import { useMakeAdminToSuper } from "@/hooks/superAdmin/useMakeAdminToSuper";
+import { getApiErrorMessage } from "@/lib/getApiErrorMessage";
 import { Link } from "react-router-dom";
+import { toast } from "sonner";
 
 function SuperAdminAdmins() {
   const { data, isLoading, isError, error } = useGetAdmins();
   const admins = data ?? [];
   const { mutate: deleteAdmin, isPending: isDeleting } = useDeleteAdmin();
+  const { mutate: makeAdminToSuper, isPending: isPromoting } =
+    useMakeAdminToSuper();
+
+  const handlePromoteAdmin = (id: number) => {
+    makeAdminToSuper(id, {
+      onSuccess: () => {
+        toast.success("Admin promoted to super admin.");
+      },
+      onError: (mutationError) => {
+        toast.error(
+          getApiErrorMessage(mutationError, "Failed to promote admin."),
+        );
+      },
+    });
+  };
 
   return (
     <div
@@ -34,7 +52,7 @@ function SuperAdminAdmins() {
           <Link to={"/admins/create"}>
             <Button
               size="sm"
-              className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-400 dark:hover:bg-blue-500"
+              className="bg-[#0f8f8b] text-white hover:bg-[#0c7d79] dark:bg-[#0f8f8b] dark:hover:bg-[#0c7d79]"
             >
               Add Admin
             </Button>
@@ -42,9 +60,9 @@ function SuperAdminAdmins() {
         </div>
 
         {/* الجدول */}
-        <div className="w-full rounded-lg border bg-white dark:bg-gray-900 shadow-lg">
+        <div className="w-full overflow-hidden rounded-lg border border-[#0f8f8b]/20 bg-white shadow-lg dark:border-[#0f8f8b]/30 dark:bg-gray-900">
           <Table className="min-w-[1100px] text-base">
-            <TableCaption className="px-4 pb-4 text-left">
+            <TableCaption className="px-4 pb-4 text-left text-[#0f8f8b] dark:text-[#49c7c2]">
               {isLoading
                 ? "Loading admins..."
                 : isError
@@ -53,21 +71,24 @@ function SuperAdminAdmins() {
                     ? "No admins found"
                     : `Showing ${admins.length} admin${admins.length === 1 ? "" : "s"}`}
             </TableCaption>
-            <TableHeader className="bg-blue-100 dark:bg-gray-800">
-              <TableRow>
-                <TableHead className="w-[240px] px-6 py-4 text-base text-blue-800 dark:text-blue-300">
+            <TableHeader className="bg-[#0f8f8b]/10 dark:bg-[#0f8f8b]/20">
+              <TableRow className="hover:bg-transparent data-[state=selected]:bg-transparent">
+                <TableHead className="w-[240px] px-6 py-4 text-base text-[#0f8f8b] dark:text-[#49c7c2]">
                   Name
                 </TableHead>
-                <TableHead className="px-6 py-4 text-base text-blue-800 dark:text-blue-300">
+                <TableHead className="px-6 py-4 text-base text-[#0f8f8b] dark:text-[#49c7c2]">
                   Email
                 </TableHead>
-                <TableHead className="px-6 py-4 text-base text-blue-800 dark:text-blue-300">
+                <TableHead className="px-6 py-4 text-base text-[#0f8f8b] dark:text-[#49c7c2]">
                   Number
                 </TableHead>
-                <TableHead className="px-6 py-4 text-base text-blue-800 dark:text-blue-300">
+                <TableHead className="px-6 py-4 text-base text-[#0f8f8b] dark:text-[#49c7c2]">
                   Location
                 </TableHead>
-                <TableHead className="px-6 py-4 text-right text-base text-blue-800 dark:text-blue-300">
+                <TableHead className="px-6 py-4 text-base text-[#0f8f8b] dark:text-[#49c7c2]">
+                  Role
+                </TableHead>
+                <TableHead className="px-6 py-4 text-right text-base text-[#0f8f8b] dark:text-[#49c7c2]">
                   <span className="sr-only">Actions</span>
                 </TableHead>
               </TableRow>
@@ -76,7 +97,7 @@ function SuperAdminAdmins() {
               {isLoading ? (
                 <TableRow>
                   <TableCell
-                    colSpan={5}
+                    colSpan={6}
                     className="px-6 py-6 text-base text-muted-foreground"
                   >
                     Loading admins...
@@ -85,7 +106,7 @@ function SuperAdminAdmins() {
               ) : isError ? (
                 <TableRow>
                   <TableCell
-                    colSpan={5}
+                    colSpan={6}
                     className="px-6 py-6 text-base text-destructive"
                   >
                     {error?.message || "Failed to load admins."}
@@ -94,7 +115,7 @@ function SuperAdminAdmins() {
               ) : admins.length === 0 ? (
                 <TableRow>
                   <TableCell
-                    colSpan={5}
+                    colSpan={6}
                     className="px-6 py-6 text-base text-muted-foreground"
                   >
                     No admins found.
@@ -102,35 +123,55 @@ function SuperAdminAdmins() {
                 </TableRow>
               ) : (
                 admins.map((admin) => (
-                  <TableRow key={admin.id}>
-                    <TableCell className="px-6 py-4 text-base font-medium text-blue-900 dark:text-blue-200">
+                  <TableRow
+                    key={admin.id}
+                    className="text-slate-800 hover:bg-[#0f8f8b]/5 data-[state=selected]:bg-[#0f8f8b]/10 dark:text-slate-100 dark:hover:bg-[#0f8f8b]/10"
+                  >
+                    <TableCell className="px-6 py-4 text-base font-medium text-[#0f8f8b] dark:text-[#49c7c2]">
                       {admin.name}
                     </TableCell>
-                    <TableCell className="px-6 py-4 text-base text-gray-600 dark:text-gray-400">
+                    <TableCell className="px-6 py-4 text-base text-slate-600 dark:text-slate-300">
                       {admin.email}
                     </TableCell>
-                    <TableCell className="px-6 py-4 text-base text-blue-900 dark:text-blue-200">
+                    <TableCell className="px-6 py-4 text-base">
                       {admin.phone}
                     </TableCell>
-                    <TableCell className="px-6 py-4 text-base text-blue-900 dark:text-blue-200">
+                    <TableCell className="px-6 py-4 text-base">
                       {admin.regionName}
                     </TableCell>
+                    <TableCell className="px-6 py-4 text-base">
+                      {admin.role}
+                    </TableCell>
                     <TableCell className="px-6 py-4 text-right">
-                      <DeleteDialog
-                        title="Delete admin?"
-                        description="This action cannot be undone."
-                        onConfirm={() => deleteAdmin(admin.id.toString())}
-                        isPending={isDeleting}
-                        trigger={
+                      <div className="flex justify-end gap-2">
+                        {!["superadmin", "super_admin"].includes(
+                          admin.role.toLowerCase(),
+                        ) && (
                           <Button
-                            variant="destructive"
                             size="xs"
-                            className="bg-red-600 text-white hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600"
+                            disabled={isPromoting}
+                            onClick={() => handlePromoteAdmin(admin.id)}
+                            className="bg-[#0f8f8b] text-white hover:bg-[#0c7d79] disabled:cursor-not-allowed disabled:opacity-70 dark:bg-[#0f8f8b] dark:hover:bg-[#0c7d79]"
                           >
-                            Delete
+                            Make Super
                           </Button>
-                        }
-                      />
+                        )}
+                        <DeleteDialog
+                          title="Delete admin?"
+                          description="This action cannot be undone."
+                          onConfirm={() => deleteAdmin(admin.id.toString())}
+                          isPending={isDeleting}
+                          trigger={
+                            <Button
+                              variant="destructive"
+                              size="xs"
+                              className="bg-red-600 text-white hover:bg-red-700 dark:bg-red-500 dark:hover:bg-red-600"
+                            >
+                              Delete
+                            </Button>
+                          }
+                        />
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))

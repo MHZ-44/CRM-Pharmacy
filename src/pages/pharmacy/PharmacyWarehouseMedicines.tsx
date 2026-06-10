@@ -12,7 +12,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { useGetMedicineInWarehouse } from "@/hooks/pharmacy/useGetMedicineInWarehouse";
 import { useCreateCart } from "@/hooks/pharmacy/useCreateCart";
+import { useCreateRating } from "@/hooks/pharmacy/useCreateRating";
 import { useGetCartStatus } from "@/hooks/pharmacy/useGetCart";
+import { StarRating } from "@/components/StarRating";
 import { toast } from "sonner";
 import { getApiErrorMessage } from "@/lib/getApiErrorMessage";
 
@@ -20,15 +22,22 @@ export default function PharmacyWarehouseMedicines() {
   const { warehouseId } = useParams();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedRating, setSelectedRating] = useState<number | null>(null);
   const [quantities, setQuantities] = useState<Record<number, string>>({});
   const { mutate: addToCart, isPending } = useCreateCart();
+  const warehouseIdNumber = Number.parseInt(warehouseId ?? "", 10);
+  const activeWarehouseId = Number.isNaN(warehouseIdNumber)
+    ? null
+    : warehouseIdNumber;
+  const { mutate: createRating, isPending: isRatingPending } =
+    useCreateRating(activeWarehouseId);
   const { data: cartStatus } = useGetCartStatus();
   const { data, isLoading, isError, error } = useGetMedicineInWarehouse(
     warehouseId,
   );
   const medicines = useMemo(() => data ?? [], [data]);
   const hasCart = cartStatus?.cartExists ?? false;
-  const cartCount = cartStatus?.hasItems ? 1 : 0;
+  const displayedRating = selectedRating ?? 0;
 
   const filteredMedicines = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
@@ -51,10 +60,9 @@ export default function PharmacyWarehouseMedicines() {
     barcode: string,
     maxQuantity: number,
   ) => {
-    const warehouseIdNumber = Number.parseInt(warehouseId ?? "", 10);
     const selectedQuantity = Number.parseInt(quantities[medicineId] ?? "1", 10);
 
-    if (!warehouseIdNumber || Number.isNaN(warehouseIdNumber)) {
+    if (!activeWarehouseId) {
       toast.error("Warehouse id is invalid.");
       return;
     }
@@ -71,7 +79,7 @@ export default function PharmacyWarehouseMedicines() {
 
     addToCart(
       {
-        warehouse_id: warehouseIdNumber,
+        warehouse_id: activeWarehouseId,
         barcode,
         quantity: selectedQuantity,
       },
@@ -88,16 +96,44 @@ export default function PharmacyWarehouseMedicines() {
     );
   };
 
+  const handleRating = (rating: number) => {
+    if (!activeWarehouseId) return;
+
+    setSelectedRating(rating);
+
+    createRating(
+      { rating },
+      {
+        onSuccess: () => {
+          toast.success("Warehouse rating saved.");
+        },
+        onError: (mutationError) => {
+          toast.error(
+            getApiErrorMessage(mutationError, "Failed to save rating."),
+          );
+        },
+      },
+    );
+  };
+
   return (
     <div className="min-h-screen space-y-8 p-8 text-[18px] text-gray-900 bg-gradient-to-br from-white via-slate-200 to-blue-100 dark:from-gray-900 dark:via-slate-900 dark:to-blue-950 dark:text-slate-100">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-3xl font-bold text-blue-800 dark:text-blue-200">
-          Warehouse Medicines
-        </h1>
+        <div className="flex flex-wrap items-center gap-4">
+          <h1 className="text-3xl font-bold text-blue-800 dark:text-blue-200">
+            Warehouse Medicines
+          </h1>
+          <StarRating
+            value={displayedRating}
+            size={30}
+            disabled={isRatingPending}
+            onChange={handleRating}
+          />
+        </div>
         {hasCart && (
           <Button
             type="button"
-            className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-400 dark:hover:bg-blue-500"
+            className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-400 dark:hover:bg-[rgba(15,143,139,0.08)]0"
             onClick={() => navigate("/pharmacy/cart")}
           >
             Go to Cart
@@ -163,7 +199,7 @@ export default function PharmacyWarehouseMedicines() {
               filteredMedicines.map((medicine, index) => (
                 <TableRow
                   key={medicine.id}
-                  className={`transition hover:bg-blue-50 dark:hover:bg-slate-800/70 ${
+                  className={`transition hover:bg-[rgba(15,143,139,0.08)] dark:hover:bg-slate-800/70 ${
                     index % 2 === 0
                       ? "bg-white dark:bg-slate-900"
                       : "bg-gray-100 dark:bg-slate-900/60"
@@ -207,7 +243,7 @@ export default function PharmacyWarehouseMedicines() {
                           medicine.available_quantity,
                         )
                       }
-                      className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-400 dark:hover:bg-blue-500"
+                      className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-400 dark:hover:bg-[rgba(15,143,139,0.08)]0"
                     >
                       Add
                     </Button>

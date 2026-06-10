@@ -4,6 +4,11 @@ import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import dayjs from "dayjs";
 
+const toNumber = (value: unknown) => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : 0;
+};
+
 export const useGetWarehouses = () => {
   const [searchParams] = useSearchParams();
 
@@ -24,6 +29,10 @@ export const useGetWarehouses = () => {
       adminAddIt: string;
       regionName: string;
       addedDate: string;
+      averageRating: number;
+      ratingsCount: number;
+      hasRated: boolean;
+      userRating: number;
     }[]
   >({
     queryKey: ["warehouses", paramsString],
@@ -40,6 +49,16 @@ export const useGetWarehouses = () => {
         adminAddIt: warehouse.admin?.name ?? "",
         regionName: warehouse.region?.name ?? "",
         addedDate: dayjs(warehouse.activated_at).format("YYYY-MM-DD"),
+        averageRating: toNumber(
+          warehouse.average_rating ?? warehouse.avg_rating ?? warehouse.rating,
+        ),
+        ratingsCount: toNumber(
+          warehouse.ratings_count ??
+            warehouse.rating_count ??
+            warehouse.raters_count,
+        ),
+        hasRated: Boolean(warehouse.has_rated),
+        userRating: toNumber(warehouse.user_rating ?? warehouse.my_rating),
       }));
     },
   });

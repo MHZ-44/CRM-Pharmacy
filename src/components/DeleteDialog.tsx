@@ -42,14 +42,21 @@ function DeleteDialog({
           </Button>
         )}
       </AlertDialogTrigger>
-      <AlertDialogContent size="sm">
+      <AlertDialogContent
+        size="sm"
+        className="rounded-2xl border border-slate-200 bg-white shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:shadow-none"
+      >
         <AlertDialogHeader>
           <AlertDialogMedia className="bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-destructive">
             <Trash2Icon />
           </AlertDialogMedia>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogTitle className="text-blue-800 dark:text-blue-300">
+            {title}
+          </AlertDialogTitle>
           {description ? (
-            <AlertDialogDescription>{description}</AlertDialogDescription>
+            <AlertDialogDescription className="text-blue-600 dark:text-blue-300">
+              {description}
+            </AlertDialogDescription>
           ) : null}
         </AlertDialogHeader>
         <AlertDialogFooter>

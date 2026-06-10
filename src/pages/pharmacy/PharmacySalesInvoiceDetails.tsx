@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   Table,
@@ -8,6 +9,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useGetSalesInvoices } from "@/hooks/pharmacy/useGetOneSalesInvoices";
+import { useUpdatePaidTotal } from "@/hooks/pharmacy/useUpdatePaidTotal";
+import { useDeleteFeedback } from "@/hooks/pharmacy/useDeleteFeedback";
+import { toast } from "sonner";
+import { getApiErrorMessage } from "@/lib/getApiErrorMessage";
+import DeleteDialog from "@/components/DeleteDialog";
+import { Button } from "@/components/ui/button";
 
 export default function PharmacySalesInvoiceDetails() {
   const { invoiceId } = useParams();
@@ -15,6 +22,52 @@ export default function PharmacySalesInvoiceDetails() {
     useGetSalesInvoices(invoiceId);
   const items = data ?? [];
   const summary = items[0];
+  const [paidTotalDraft, setPaidTotalDraft] = useState<string | null>(null);
+  const { mutate: updatePaidTotal, isPending: isUpdatingPaid } =
+    useUpdatePaidTotal();
+  const { mutate: deleteFeedback, isPending: isDeletingFeedback } =
+    useDeleteFeedback(invoiceId);
+  const paidTotalInput =
+    paidTotalDraft ??
+    (summary?.paid_total !== undefined && summary?.paid_total !== null
+      ? String(summary.paid_total)
+      : "");
+  const feedback = summary?.feedback?.trim() ?? "";
+
+  const handlePaidTotalUpdate = () => {
+    if (!invoiceId) return;
+    const parsed = Number(paidTotalInput);
+    if (!Number.isFinite(parsed)) {
+      toast.error("Paid total is required.");
+      return;
+    }
+    updatePaidTotal(
+      { id: invoiceId, paid_total: parsed },
+      {
+        onSuccess: () => {
+          toast.success("Paid total updated.");
+        },
+        onError: (err) => {
+          toast.error(
+            getApiErrorMessage(err, "Failed to update paid total."),
+          );
+        },
+      },
+    );
+  };
+
+  const handleDeleteFeedback = () => {
+    deleteFeedback(invoiceId ?? "", {
+      onSuccess: () => {
+        toast.success("Feedback deleted.");
+      },
+      onError: (err) => {
+        toast.error(
+          getApiErrorMessage(err, "Failed to delete feedback."),
+        );
+      },
+    });
+  };
 
   return (
     <div className="min-h-screen space-y-8 p-8 text-[18px] text-gray-900 bg-gradient-to-br from-white via-slate-200 to-blue-100 dark:from-gray-900 dark:via-slate-900 dark:to-blue-950 dark:text-slate-100">
@@ -101,7 +154,7 @@ export default function PharmacySalesInvoiceDetails() {
                 {items.map((item, index) => (
                   <TableRow
                     key={`${item.id}-${index}`}
-                    className={`transition hover:bg-blue-50 dark:hover:bg-slate-800/70 ${
+                    className={`transition hover:bg-[rgba(15,143,139,0.08)] dark:hover:bg-slate-800/70 ${
                       index % 2 === 0
                         ? "bg-white dark:bg-slate-900"
                         : "bg-gray-100 dark:bg-slate-900/60"
@@ -131,9 +184,69 @@ export default function PharmacySalesInvoiceDetails() {
                     Paid Total
                   </TableCell>
                   <TableCell className="p-4">
-                    {summary?.paid_total ?? "—"}
+                    <div className="flex flex-wrap items-center gap-3">
+                      <span className="text-sm text-slate-700 dark:text-slate-200">
+                        {summary?.paid_total ?? "—"}
+                      </span>
+                      <input
+                        type="number"
+                        min={0}
+                        value={paidTotalInput}
+                        onChange={(event) =>
+                          setPaidTotalDraft(event.target.value)
+                        }
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") {
+                            event.preventDefault();
+                            handlePaidTotalUpdate();
+                          }
+                        }}
+                        placeholder="Paid amount"
+                        className="w-32 rounded-lg border bg-white px-2.5 py-1.5 text-[15px] shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-60 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 no-spinner"
+                        disabled={isUpdatingPaid}
+                      />
+                      <button
+                        type="button"
+                        onClick={handlePaidTotalUpdate}
+                        disabled={isUpdatingPaid}
+                        className="rounded-lg bg-blue-600 px-2.5 py-1 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-60"
+                      >
+                        {isUpdatingPaid ? "Saving..." : "Update"}
+                      </button>
+                    </div>
                   </TableCell>
                 </TableRow>
+                {feedback && (
+                  <TableRow className="bg-blue-50/60 font-semibold dark:bg-slate-800/40">
+                    <TableCell className="p-4" colSpan={2}>
+                      Feedback
+                    </TableCell>
+                    <TableCell className="p-4" colSpan={4}>
+                      <span className="font-normal text-slate-700 dark:text-slate-200">
+                        {feedback}
+                      </span>
+                    </TableCell>
+                    <TableCell className="p-4">
+                      <DeleteDialog
+                        title="Delete feedback?"
+                        description="This action cannot be undone."
+                        onConfirm={handleDeleteFeedback}
+                        isPending={isDeletingFeedback}
+                        confirmLabel="Delete Feedback"
+                        trigger={
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="destructive"
+                            disabled={isDeletingFeedback}
+                          >
+                            Delete Feedback
+                          </Button>
+                        }
+                      />
+                    </TableCell>
+                  </TableRow>
+                )}
               </>
             )}
           </TableBody>

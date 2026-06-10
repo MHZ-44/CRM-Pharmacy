@@ -119,8 +119,8 @@ export default function PharmacyCart() {
         </h1>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:shadow-none">
-        <Table className="min-w-[900px] border-collapse text-base">
+      <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:shadow-none">
+        <Table className="min-w-[980px] border-collapse text-base">
           <TableHeader className="bg-blue-100 text-lg dark:bg-slate-800">
             <TableRow>
               <TableHead className="p-4 text-left">Warehouse</TableHead>
@@ -172,7 +172,7 @@ export default function PharmacyCart() {
                 return (
                   <TableRow
                     key={`${item.cart_id}-${item.name}-${index}`}
-                    className={`transition hover:bg-blue-50 dark:hover:bg-slate-800/70 ${
+                    className={`transition hover:bg-[rgba(15,143,139,0.08)] dark:hover:bg-slate-800/70 ${
                       index % 2 === 0
                         ? "bg-white dark:bg-slate-900"
                         : "bg-gray-100 dark:bg-slate-900/60"
@@ -180,7 +180,9 @@ export default function PharmacyCart() {
                   >
                     <TableCell className="p-4">{item.warehouse_name}</TableCell>
                     <TableCell className="p-4 font-semibold">
-                      {item.name}
+                      <div className="max-w-[220px] whitespace-normal break-words">
+                        {item.name}
+                      </div>
                     </TableCell>
                     <TableCell className="p-4">{item.strength}</TableCell>
                     <TableCell className="p-4">{item.company_name}</TableCell>
@@ -210,7 +212,7 @@ export default function PharmacyCart() {
                               quantityValue,
                             )
                           }
-                          className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-400 dark:hover:bg-blue-500"
+                          className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-400 dark:hover:bg-[rgba(15,143,139,0.08)]0"
                         >
                           Update
                         </Button>

@@ -36,15 +36,20 @@ import { PercentIcon } from "lucide-react";
 
 const PRODUCT_BARCODE_LENGTHS = [13];
 const PRODUCT_BARCODE_FORMATS = [BarcodeFormat.EAN_13];
+const SALES_CART_DELETED_SESSION_KEY = "pharmacy_sales_cart_deleted";
 
 export default function PharmacySalesCart() {
   const [showScanner, setShowScanner] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [barcodeInput, setBarcodeInput] = useState("");
-  const [hasSalesCart, setHasSalesCart] = useState(false);
   const [priceInput, setPriceInput] = useState("");
+  const [feedbackInput, setFeedbackInput] = useState("");
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [confirmDialogMessage, setConfirmDialogMessage] = useState("");
+  const [shouldFetchCart, setShouldFetchCart] = useState(() => {
+    if (typeof window === "undefined") return true;
+    return sessionStorage.getItem(SALES_CART_DELETED_SESSION_KEY) !== "1";
+  });
   const { mutate: createSalesCart, isPending } = useCreateSalesCart();
   const { mutate: createPrice, isPending: isCreatingPrice } = useCreatePrice();
   const { mutate: confirmPrice, isPending: isConfirmingPrice } =
@@ -55,7 +60,7 @@ export default function PharmacySalesCart() {
     useDeleteSalesItem();
   const { mutate: deleteSalesCart, isPending: isDeletingCart } =
     useDeleteSalesCart();
-  const { data, isLoading, isError, error } = useGetSalesCart(hasSalesCart);
+  const { data, isLoading, isError, error } = useGetSalesCart(shouldFetchCart);
   const rows = useMemo(() => data ?? [], [data]);
   const [quantityDraft, setQuantityDraft] = useState<Record<string, string>>(
     {},
@@ -92,6 +97,10 @@ export default function PharmacySalesCart() {
   const addBarcode = (value: string) => {
     const trimmed = value.trim();
     if (!trimmed) return;
+    if (typeof window !== "undefined") {
+      sessionStorage.removeItem(SALES_CART_DELETED_SESSION_KEY);
+    }
+    setShouldFetchCart(true);
 
     const existing = rows.find((row) => row.barcode === trimmed);
     if (existing) {
@@ -115,7 +124,6 @@ export default function PharmacySalesCart() {
       { barcode: trimmed },
       {
         onSuccess: () => {
-          setHasSalesCart(true);
           setBarcodeInput("");
         },
         onError: (mutationError) => {
@@ -173,8 +181,12 @@ export default function PharmacySalesCart() {
       onSuccess: () => {
         toast.success("Sell cart deleted.");
         setQuantityDraft({});
-        setHasSalesCart(false);
         setPriceInput("");
+        setFeedbackInput("");
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem(SALES_CART_DELETED_SESSION_KEY, "1");
+        }
+        setShouldFetchCart(false);
       },
       onError: (mutationError) => {
         toast.error(
@@ -201,12 +213,16 @@ export default function PharmacySalesCart() {
     }
 
     createPrice(
-      { paid_total: parsedPrice },
+      {
+        paid_total: parsedPrice,
+        ...(feedbackInput.trim() ? { feedback: feedbackInput.trim() } : {}),
+      },
       {
         onSuccess: () => {
           toast.success("Sale confirmed.");
           setConfirmDialogOpen(false);
           setShowScanner(false);
+          setFeedbackInput("");
         },
         onError: (mutationError) => {
           const responseData = (
@@ -242,18 +258,22 @@ export default function PharmacySalesCart() {
   };
 
   const handleConfirmLowPrice = () => {
-    confirmPrice(undefined, {
-      onSuccess: () => {
-        toast.success("Sale confirmed.");
-        setConfirmDialogOpen(false);
-        setShowScanner(false);
+    confirmPrice(
+      feedbackInput.trim() ? { feedback: feedbackInput.trim() } : undefined,
+      {
+        onSuccess: () => {
+          toast.success("Sale confirmed.");
+          setConfirmDialogOpen(false);
+          setShowScanner(false);
+          setFeedbackInput("");
+        },
+        onError: (mutationError) => {
+          toast.error(
+            getApiErrorMessage(mutationError, "Failed to confirm sale."),
+          );
+        },
       },
-      onError: (mutationError) => {
-        toast.error(
-          getApiErrorMessage(mutationError, "Failed to confirm sale."),
-        );
-      },
-    });
+    );
   };
 
   const handleScan = (value: string) => {
@@ -339,7 +359,7 @@ export default function PharmacySalesCart() {
               type="button"
               onClick={handleManualAdd}
               disabled={!barcodeInput.trim() || isPending || isUpdating}
-              className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-400 dark:hover:bg-blue-500"
+              className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-400 dark:hover:bg-[rgba(15,143,139,0.08)]0"
             >
               {isPending || isUpdating ? "Adding..." : "Add"}
             </Button>
@@ -363,8 +383,8 @@ export default function PharmacySalesCart() {
         </div>
       )}
 
-      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:shadow-none">
-        <Table className="min-w-[900px] border-collapse text-base">
+      <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:shadow-none">
+        <Table className="min-w-[980px] border-collapse text-base">
           <TableHeader className="bg-blue-100 text-lg dark:bg-slate-800">
             <TableRow>
               <TableHead className="p-4 text-left">Name</TableHead>
@@ -411,14 +431,16 @@ export default function PharmacySalesCart() {
                 {filteredRows.map((row, index) => (
                   <TableRow
                     key={`${row.cart_id}-${row.barcode}-${index}`}
-                    className={`transition hover:bg-blue-50 dark:hover:bg-slate-800/70 ${
+                    className={`transition hover:bg-[rgba(15,143,139,0.08)] dark:hover:bg-slate-800/70 ${
                       index % 2 === 0
                         ? "bg-white dark:bg-slate-900"
                         : "bg-gray-100 dark:bg-slate-900/60"
                     }`}
                   >
                     <TableCell className="p-4 font-semibold">
-                      {row.name}
+                      <div className="max-w-[220px] whitespace-normal break-words">
+                        {row.name}
+                      </div>
                     </TableCell>
                     <TableCell className="p-4 font-medium text-blue-700 dark:text-blue-300">
                       {row.strength}
@@ -455,7 +477,7 @@ export default function PharmacySalesCart() {
                                 String(row.quantity),
                             )
                           }
-                          className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-400 dark:hover:bg-blue-500"
+                          className="bg-blue-600 text-white hover:bg-blue-700 dark:bg-blue-400 dark:hover:bg-[rgba(15,143,139,0.08)]0"
                         >
                           Update
                         </Button>
@@ -497,7 +519,7 @@ export default function PharmacySalesCart() {
                         value={priceInput}
                         onChange={(event) => setPriceInput(event.target.value)}
                         placeholder="Paid amount"
-                        className="w-24 rounded-lg border bg-white px-2 py-1 text-sm shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500"
+                        className="w-32 rounded-lg border bg-white px-2.5 py-1.5 text-[15px] shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 no-spinner"
                       />
                       <Button
                         type="button"
@@ -512,6 +534,20 @@ export default function PharmacySalesCart() {
                     </div>
                   </TableCell>
                   <TableCell className="p-4" colSpan={2} />
+                </TableRow>
+                <TableRow className="bg-blue-50/60 font-semibold dark:bg-slate-800/40">
+                  <TableCell className="p-4" colSpan={2}>
+                    Feedback
+                  </TableCell>
+                  <TableCell className="p-4" colSpan={6}>
+                    <input
+                      type="text"
+                      value={feedbackInput}
+                      onChange={(event) => setFeedbackInput(event.target.value)}
+                      placeholder="Optional customer feedback"
+                      className="w-full rounded-lg border bg-white px-3 py-2 text-sm font-normal shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500"
+                    />
+                  </TableCell>
                 </TableRow>
               </>
             )}
@@ -538,7 +574,7 @@ export default function PharmacySalesCart() {
             <Button
               type="button"
               variant="destructive"
-              disabled={isDeletingCart}
+              disabled={isDeletingCart || rows.length === 0}
             >
               Delete Sell Cart
             </Button>

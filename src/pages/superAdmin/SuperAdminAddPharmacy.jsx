@@ -150,10 +150,7 @@ export default function SuperAdminAddPharmacy() {
             whileTap={{ scale: 0.97 }}
             type="submit"
             disabled={isPending}
-            className="w-full py-3 rounded-xl font-semibold text-blue-100
-              bg-gradient-to-r from-blue-500 to-blue-700
-              hover:from-blue-700 hover:to-blue-800
-              shadow-lg disabled:cursor-not-allowed disabled:opacity-70"
+            className="w-full rounded-xl bg-[#0f8f8b] py-3 font-semibold text-white shadow-lg transition hover:bg-[#0c7d79] disabled:cursor-not-allowed disabled:opacity-70"
           >
             {isPending ? "Adding..." : "Add Pharmacy"}
           </motion.button>
